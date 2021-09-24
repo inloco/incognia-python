@@ -1,18 +1,16 @@
 import base64
 import datetime as dt
 import json
-from typing import Tuple
-from urllib.parse import urljoin
+from typing import Tuple, Final
 
 import requests
 
+from endpoints import Endpoints
 from exceptions import IncogniaException
 
-URL = 'https://api.us.incognia.com'
-TOKEN_PATH: str = 'api/v1/token'
-AUTHORIZATION_HEADER: str = 'Authorization'
-OK_STATUS_CODE: int = 200
-TOKEN_REFRESH_BEFORE_SECONDS: int = 10
+AUTHORIZATION_HEADER: Final[str] = 'Authorization'
+OK_STATUS_CODE: Final[int] = 200
+TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
 
 class Value:
@@ -36,7 +34,7 @@ class AwareNetworkingToken:
         base64url = base64.urlsafe_b64encode(client_id_secret.encode('ascii')).decode('utf-8')
         headers = {AUTHORIZATION_HEADER: 'Basic ' + base64url}
 
-        response = requests.post(url=urljoin(URL, TOKEN_PATH), headers=headers, auth=(client_id, client_secret))
+        response = requests.post(url=Endpoints.TOKEN, headers=headers, auth=(client_id, client_secret))
 
         if response.status_code == OK_STATUS_CODE:
             parsed_response = json.loads(response.content.decode('utf-8'))
