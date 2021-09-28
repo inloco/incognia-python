@@ -14,20 +14,11 @@ TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
 
 class TokenValues:
-    access_token: str
-    token_type: str
-
     def __init__(self, access_token: str, token_type: str):
         self.access_token, self.token_type = access_token, token_type
 
 
 class TokenManager:
-    __client_id: str
-    __client_secret: str
-
-    __token_values: TokenValues
-    __expiration_time: dt.datetime
-
     @staticmethod
     def __get_new_token(client_id: str, client_secret: str) -> Tuple[TokenValues, dt.datetime]:
         client_id_secret = client_id + ':' + client_secret
