@@ -1,2 +1,5 @@
-class IncogniaException(Exception):
+from requests import HTTPError
+
+
+class IncogniaHTTPError(HTTPError):
     pass
