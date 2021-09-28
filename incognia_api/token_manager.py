@@ -1,7 +1,7 @@
 import base64
 import datetime as dt
 import json
-from typing import Final, Tuple
+from typing import Final, Optional
 
 import requests
 
@@ -18,8 +18,14 @@ class TokenValues:
 
 
 class TokenManager:
-    @staticmethod
-    def __get_new_token(client_id: str, client_secret: str) -> Tuple[TokenValues, dt.datetime]:
+    def __init__(self, client_id: str, client_secret: str):
+        self.__client_id: str = client_id
+        self.__client_secret: str = client_secret
+        self.__token_values: Optional[TokenValues] = None
+        self.__expiration_time: Optional[dt.datetime] = None
+
+    def __refresh_token(self) -> None:
+        client_id, client_secret = self.__client_id, self.__client_secret
         client_id_and_secret = client_id + ':' + client_secret
         base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
         headers = {AUTHORIZATION_HEADER: 'Basic ' + base64url}
@@ -32,18 +38,14 @@ class TokenManager:
             token_values = TokenValues(parsed_response['access_token'], parsed_response['token_type'])
             expiration_time = dt.datetime.now() + dt.timedelta(seconds=int(parsed_response['expires_in']))
 
-            return token_values, expiration_time
+            self.__token_values, self.__expiration_time = token_values, expiration_time
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
-
-    def __init__(self, client_id: str, client_secret: str):
-        self.__client_id, self.__client_secret = client_id, client_secret
-        self.__token_values, self.__expiration_time = self.__get_new_token(self.__client_id, self.__client_secret)
 
     def __is_expired(self) -> bool:
         return (self.__expiration_time - dt.datetime.now()).total_seconds() <= TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
-        if self.__is_expired():
-            self.__token_values, self.__expiration_time = self.__get_new_token(self.__client_id, self.__client_secret)
+        if not self.__expiration_time or self.__is_expired():
+            self.__refresh_token()
         return self.__token_values
