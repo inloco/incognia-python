@@ -14,7 +14,8 @@ TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
 class TokenValues:
     def __init__(self, access_token: str, token_type: str):
-        self.access_token, self.token_type = access_token, token_type
+        self.access_token: str = access_token
+        self.token_type: str = token_type
 
 
 class TokenManager:
@@ -26,7 +27,7 @@ class TokenManager:
 
     def __refresh_token(self) -> None:
         client_id, client_secret = self.__client_id, self.__client_secret
-        client_id_and_secret = client_id + ':' + client_secret
+        client_id_and_secret = f'{client_id}:{client_secret}'
         base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
         headers = {AUTHORIZATION_HEADER: 'Basic ' + base64url}
 
