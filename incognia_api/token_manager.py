@@ -1,21 +1,19 @@
 import base64
 import datetime as dt
 import json
-from typing import Final, Optional
+from typing import Final, Optional, NamedTuple
 
 import requests
 
 from endpoints import Endpoints
 from exceptions import IncogniaHTTPError
 
-AUTHORIZATION_HEADER: Final[str] = 'Authorization'
 TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
 
-class TokenValues:
-    def __init__(self, access_token: str, token_type: str):
-        self.access_token: str = access_token
-        self.token_type: str = token_type
+class TokenValues(NamedTuple):
+    access_token: str
+    token_type: str
 
 
 class TokenManager:
@@ -29,7 +27,7 @@ class TokenManager:
         client_id, client_secret = self.__client_id, self.__client_secret
         client_id_and_secret = f'{client_id}:{client_secret}'
         base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
-        headers = {AUTHORIZATION_HEADER: 'Basic ' + base64url}
+        headers = {'Authorization': f'Basic {base64url}'}
 
         try:
             response = requests.post(url=Endpoints.TOKEN, headers=headers, auth=(client_id, client_secret))
