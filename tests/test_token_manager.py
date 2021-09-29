@@ -15,7 +15,7 @@ class TestTokenManager(TestCase):
     EXPIRATION_TIME: Final[dt.datetime] = dt.datetime.fromisoformat('2000-01-01')
 
     @patch.object(TokenManager, '_TokenManager__refresh_token')
-    def test_get_whenCredentialsAreValid_shouldReturnAValidToken(self, mock_refresh_token: Mock):
+    def test_get_when_credentials_are_valid_should_return_a_valid_token(self, mock_refresh_token: Mock):
         token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
 
         def refresh_token_side_effect():
@@ -28,7 +28,7 @@ class TestTokenManager(TestCase):
         self.assertEqual(token_values, self.TOKEN_VALUES)
 
     @patch.object(TokenManager, '_TokenManager__refresh_token')
-    def test_get_whenCredentialsAreInvalid_shouldRaiseAnIncogniaHTTPError(self, mock_refresh_token: Mock):
+    def test_get_when_credentials_are_invalid_should_raise_an_IncogniaHTTPError(self, mock_refresh_token: Mock):
         mock_refresh_token.configure_mock(side_effect=IncogniaHTTPError())
         token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
         self.assertRaises(IncogniaHTTPError, token_manager.get)
@@ -36,7 +36,8 @@ class TestTokenManager(TestCase):
 
     @patch.object(TokenManager, '_TokenManager__is_expired')
     @patch.object(TokenManager, '_TokenManager__refresh_token')
-    def test_get_whenTokenIsExpired_shouldReturnANewValidToken(self, mock_refresh_token: Mock, mock_is_expired: Mock):
+    def test_get_when_token_is_expired_should_return_a_new_valid_token(self, mock_refresh_token: Mock,
+                                                                       mock_is_expired: Mock):
         token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
 
         def refresh_token_expired_side_effect():
