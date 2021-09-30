@@ -23,7 +23,7 @@ class TokenManager:
         self.__token_values: Optional[TokenValues] = None
         self.__expiration_time: Optional[dt.datetime] = None
 
-    def __refresh_token(self) -> None:
+    def refresh_token(self) -> None:
         client_id, client_secret = self.__client_id, self.__client_secret
         client_id_and_secret = f'{client_id}:{client_secret}'
         base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
@@ -41,10 +41,10 @@ class TokenManager:
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
 
-    def __is_expired(self) -> bool:
+    def is_expired(self) -> bool:
         return (self.__expiration_time - dt.datetime.now()).total_seconds() <= TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
-        if not self.__expiration_time or self.__is_expired():
-            self.__refresh_token()
+        if not self.__expiration_time or self.is_expired():
+            self.refresh_token()
         return self.__token_values
