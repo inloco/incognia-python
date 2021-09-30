@@ -11,7 +11,7 @@ class TestTokenManager(TestCase):
     CLIENT_ID: Final[str] = 'ANY_ID'
     CLIENT_SECRET: Final[str] = 'ANY_SECRET'
     TOKEN_VALUES: Final[TokenValues] = TokenValues('ACCESS_TOKEN', 'TOKEN_TYPE')
-    EXPIRED_TOKEN_VALUES: Final[TokenValues] = TokenValues('EXPIRED_ACCESS_TOKEN', 'EXPIRED_TOKEN_TYPE')
+    SECOND_TOKEN_VALUES: Final[TokenValues] = TokenValues('SECOND_ACCESS_TOKEN', 'SECOND_TOKEN_TYPE')
     EXPIRATION_TIME: Final[dt.datetime] = dt.datetime.fromisoformat('2000-01-01')
 
     @patch.object(TokenManager, '_TokenManager__refresh_token')
@@ -40,24 +40,26 @@ class TestTokenManager(TestCase):
                                                                        mock_is_expired: Mock):
         token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        def refresh_token_expired_side_effect():
-            token_manager._TokenManager__token_values = self.EXPIRED_TOKEN_VALUES
+        def refresh_token_first_side_effect():
+            token_manager._TokenManager__token_values = self.TOKEN_VALUES
             token_manager._TokenManager__expiration_time = self.EXPIRATION_TIME
 
-        mock_refresh_token.configure_mock(side_effect=refresh_token_expired_side_effect)
+        mock_refresh_token.configure_mock(side_effect=refresh_token_first_side_effect)
 
-        expired_token_values = token_manager.get()
+        first_token_values = token_manager.get()
         mock_refresh_token.assert_called()
 
-        def refresh_token_new_side_effect():
-            token_manager._TokenManager__token_values = self.TOKEN_VALUES
+        def refresh_token_second_side_effect():
+            token_manager._TokenManager__token_values = self.SECOND_TOKEN_VALUES
             token_manager._TokenManager__expiration_time = self.EXPIRATION_TIME + dt.timedelta(seconds=5)
 
         mock_is_expired.configure_mock(return_value=True)
         mock_refresh_token.reset_mock()
-        mock_refresh_token.configure_mock(side_effect=refresh_token_new_side_effect)
+        mock_refresh_token.configure_mock(side_effect=refresh_token_second_side_effect)
 
-        new_token_values = token_manager.get()
+        second_token_values = token_manager.get()
         mock_refresh_token.assert_called()
         mock_is_expired.assert_called()
-        self.assertNotEqual(expired_token_values, new_token_values)
+
+        self.assertEqual(first_token_values, self.TOKEN_VALUES)
+        self.assertEqual(second_token_values, self.SECOND_TOKEN_VALUES)
