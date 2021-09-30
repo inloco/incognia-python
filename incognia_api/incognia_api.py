@@ -3,10 +3,10 @@ from typing import Optional
 
 import requests
 
-from endpoints import Endpoints
-from exceptions import IncogniaHTTPError, IncogniaError
-from post_signup_request_body import StructuredAddress, Coordinates, PostSignupRequestBody, SignupRequestEncoder
-from token_manager import TokenManager
+from .endpoints import Endpoints
+from .exceptions import IncogniaHTTPError, IncogniaError
+from .post_signup_request_body import StructuredAddress, Coordinates, PostSignupRequestBody, SignupRequestEncoder
+from .token_manager import TokenManager
 
 
 class IncogniaAPI:

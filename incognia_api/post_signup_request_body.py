@@ -1,7 +1,7 @@
 import json
 from typing import Optional, Any
 
-from exceptions import IncogniaError
+from .exceptions import IncogniaError
 
 
 class Coordinates:
