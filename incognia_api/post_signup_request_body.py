@@ -1,5 +1,4 @@
-import json
-from typing import Optional, Any
+from typing import Optional
 
 from .exceptions import IncogniaError
 
@@ -55,10 +54,3 @@ class PostSignupRequestBody:
             self.coordinates = coordinates
         except AssertionError as e:
             raise IncogniaError(e)
-
-
-class SignupRequestEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if hasattr(o, '__dict__'):
-            return {k: v for (k, v) in o.__dict__.items() if v is not None}
-        return json.JSONEncoder.default(self, o)
