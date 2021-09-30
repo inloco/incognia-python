@@ -5,8 +5,8 @@ from typing import Final, Optional, NamedTuple
 
 import requests
 
-from endpoints import Endpoints
-from exceptions import IncogniaHTTPError
+from .endpoints import Endpoints
+from .exceptions import IncogniaHTTPError
 
 TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
