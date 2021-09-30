@@ -3,7 +3,7 @@ from typing import Final
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-from exceptions import IncogniaHTTPError
+from incognia_api.exceptions import IncogniaHTTPError
 from incognia_api.token_manager import TokenManager, TokenValues
 
 
