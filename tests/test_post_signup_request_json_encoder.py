@@ -43,14 +43,13 @@ class TestPostSignupRequestJSONEncoder(TestCase):
     def test_default_when_given_dict_with_keys_without_values_should_remove_these_keys(self):
         encoder = PostSignupRequestJSONEncoder()
         fixed_dict: dict = encoder.default(self.DICT_WITH_NONE_VALUES)
-
-        self.assertNotIn('key_none_one', fixed_dict)
-        self.assertNotIn('key_none_two', fixed_dict)
-        self.assertIn('key_array', fixed_dict)
-        self.assertIn('key_empty_str', fixed_dict)
-        self.assertIn('key_nested', fixed_dict)
-        self.assertIn('key_int', fixed_dict)
-        self.assertIn('key_float', fixed_dict)
+        self.assertEqual(fixed_dict, {
+            'key_array': [1, 2, 3],
+            'key_empty_str': '',
+            'key_nested': {'key': 'value'},
+            'key_int': 42,
+            'key_float': 42.24
+        })
 
     def test_default_when_given_coordinates_should_keep_all_keys(self):
         encoder = PostSignupRequestJSONEncoder()
@@ -78,15 +77,11 @@ class TestPostSignupRequestJSONEncoder(TestCase):
     def test_default_when_given_structured_address_with_none_values_should_remove_keys_with_none_values(self):
         encoder = PostSignupRequestJSONEncoder()
         fixed_dict: dict = encoder.default(self.STRUCTURED_ADDRESS_WITH_NONE_VALUES)
-
-        self.assertIn('locale', fixed_dict)
-        self.assertNotIn('country_name', fixed_dict)
-        self.assertIn('country_code', fixed_dict)
-        self.assertNotIn('state', fixed_dict)
-        self.assertIn('city', fixed_dict)
-        self.assertNotIn('borough', fixed_dict)
-        self.assertIn('neighborhood', fixed_dict)
-        self.assertNotIn('street', fixed_dict)
-        self.assertIn('number', fixed_dict)
-        self.assertNotIn('complements', fixed_dict)
-        self.assertIn('postal_code', fixed_dict)
+        self.assertEqual(fixed_dict, {
+            'locale': 'pt-BR',
+            'country_code': 'BR',
+            'city': 'São Paulo',
+            'neighborhood': 'Bela Vista',
+            'number': '1578',
+            'postal_code': '01310-200'
+        })
