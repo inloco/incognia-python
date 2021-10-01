@@ -42,9 +42,10 @@ class TokenManager:
             raise IncogniaHTTPError(e)
 
     def is_expired(self) -> bool:
-        return (self.__expiration_time - dt.datetime.now()).total_seconds() <= TOKEN_REFRESH_BEFORE_SECONDS
+        et = self.__expiration_time
+        return True if not et else (et - dt.datetime.now()).total_seconds() <= TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
-        if not self.__expiration_time or self.is_expired():
+        if self.is_expired():
             self.refresh_token()
         return self.__token_values
