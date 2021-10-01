@@ -5,9 +5,9 @@ from unittest.mock import Mock, patch
 
 import requests
 
-from incognia_api.endpoints import Endpoints
-from incognia_api.exceptions import IncogniaHTTPError
-from incognia_api.token_manager import TokenManager, TokenValues
+from incognia.endpoints import Endpoints
+from incognia.exceptions import IncogniaHTTPError
+from incognia.token_manager import TokenManager, TokenValues
 
 
 class TestTokenManager(TestCase):
