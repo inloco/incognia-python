@@ -1,8 +1,8 @@
 from typing import Final
 from unittest import TestCase
 
-from incognia_api.post_signup_request_body import Coordinates, StructuredAddress
-from incognia_api.post_signup_request_json_encoder import PostSignupRequestJSONEncoder
+from incognia.post_signup_request_body import Coordinates, StructuredAddress
+from incognia.post_signup_request_json_encoder import PostSignupRequestJSONEncoder
 
 
 class TestPostSignupRequestJSONEncoder(TestCase):
