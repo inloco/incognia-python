@@ -5,7 +5,7 @@ import requests
 
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
-from .post_signup_request_body import StructuredAddress, Coordinates, PostSignupRequestBody
+from .models import Coordinates, StructuredAddress
 from .post_signup_request_json_encoder import PostSignupRequestJSONEncoder
 from .token_manager import TokenManager
 
@@ -27,9 +27,13 @@ class IncogniaAPI:
                 'Content-type': 'application/json',
                 'Authorization': f'{token_type} {access_token}'
             }
-            body = PostSignupRequestBody(installation_id, address_line, structured_address, coordinates)
-            data = json.dumps(body, cls=PostSignupRequestJSONEncoder)
-
+            body = {
+                'installation_id': installation_id,
+                'address_line': address_line,
+                'structured_address': structured_address,
+                'coordinates': coordinates
+            }
+            data = json.dumps(PostSignupRequestJSONEncoder().default(body), cls=PostSignupRequestJSONEncoder)
             response = requests.post(Endpoints.SIGNUPS, headers=headers, data=data)
             response.raise_for_status()
 

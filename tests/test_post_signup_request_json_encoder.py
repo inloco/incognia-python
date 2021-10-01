@@ -1,7 +1,7 @@
 from typing import Final
 from unittest import TestCase
 
-from incognia.post_signup_request_body import Coordinates, StructuredAddress
+from incognia.models import Coordinates, StructuredAddress
 from incognia.post_signup_request_json_encoder import PostSignupRequestJSONEncoder
 
 
@@ -38,7 +38,7 @@ class TestPostSignupRequestJSONEncoder(TestCase):
                                                                                       number='1578',
                                                                                       complements=None,
                                                                                       postal_code='01310-200')
-    ADDRESS_COORDINATES: Final[Coordinates] = Coordinates(-23.561414, -46.6558819)
+    ADDRESS_COORDINATES: Final[Coordinates] = Coordinates(lat=-23.561414, lng=-46.6558819)
 
     def test_default_when_given_dict_with_keys_without_values_should_remove_these_keys(self):
         encoder = PostSignupRequestJSONEncoder()
