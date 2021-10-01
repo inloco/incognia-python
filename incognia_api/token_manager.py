@@ -8,8 +8,6 @@ import requests
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError
 
-TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
-
 
 class TokenValues(NamedTuple):
     access_token: str
@@ -17,13 +15,15 @@ class TokenValues(NamedTuple):
 
 
 class TokenManager:
+    TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
+
     def __init__(self, client_id: str, client_secret: str):
         self.__client_id: str = client_id
         self.__client_secret: str = client_secret
         self.__token_values: Optional[TokenValues] = None
         self.__expiration_time: Optional[dt.datetime] = None
 
-    def refresh_token(self) -> None:
+    def __refresh_token(self) -> None:
         client_id, client_secret = self.__client_id, self.__client_secret
         client_id_and_secret = f'{client_id}:{client_secret}'
         base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
@@ -41,11 +41,10 @@ class TokenManager:
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
 
-    def is_expired(self) -> bool:
-        et = self.__expiration_time
-        return True if not et else (et - dt.datetime.now()).total_seconds() <= TOKEN_REFRESH_BEFORE_SECONDS
+    def __is_expired(self) -> bool:
+        return (self.__expiration_time - dt.datetime.now()).total_seconds() <= self.TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
-        if self.is_expired():
-            self.refresh_token()
+        if not self.__expiration_time or self.__is_expired():
+            self.__refresh_token()
         return self.__token_values
