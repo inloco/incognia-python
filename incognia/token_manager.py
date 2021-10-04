@@ -25,9 +25,9 @@ class TokenManager:
 
     def __refresh_token(self) -> None:
         client_id, client_secret = self.__client_id, self.__client_secret
-        client_id_and_secret = f'{client_id}:{client_secret}'
-        base64url = base64.urlsafe_b64encode(client_id_and_secret.encode('ascii')).decode('utf-8')
-        headers = {'Authorization': f'Basic {base64url}'}
+        client_id_and_secret_encoded = base64.urlsafe_b64encode(
+            f'{client_id}:{client_secret}'.encode('ascii')).decode('utf-8')
+        headers = {'Authorization': f'Basic {client_id_and_secret_encoded}'}
 
         try:
             response = requests.post(url=Endpoints.TOKEN, headers=headers,
