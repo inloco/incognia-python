@@ -30,19 +30,23 @@ class TokenManager:
         headers = {'Authorization': f'Basic {base64url}'}
 
         try:
-            response = requests.post(url=Endpoints.TOKEN, headers=headers, auth=(client_id, client_secret))
+            response = requests.post(url=Endpoints.TOKEN, headers=headers,
+                                     auth=(client_id, client_secret))
             response.raise_for_status()
 
             parsed_response = json.loads(response.content.decode('utf-8'))
-            token_values = TokenValues(parsed_response['access_token'], parsed_response['token_type'])
-            expiration_time = dt.datetime.now() + dt.timedelta(seconds=int(parsed_response['expires_in']))
+            token_values = TokenValues(parsed_response['access_token'],
+                                       parsed_response['token_type'])
+            expiration_time = dt.datetime.now() + dt.timedelta(
+                seconds=int(parsed_response['expires_in']))
 
             self.__token_values, self.__expiration_time = token_values, expiration_time
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
 
     def __is_expired(self) -> bool:
-        return (self.__expiration_time - dt.datetime.now()).total_seconds() <= self.TOKEN_REFRESH_BEFORE_SECONDS
+        return (self.__expiration_time - dt.datetime.now()).total_seconds() <= \
+               self.TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
         if not self.__expiration_time or self.__is_expired():
