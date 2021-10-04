@@ -18,9 +18,10 @@ class IncogniaAPI:
                             address_line: Optional[str] = None,
                             structured_address: Optional[StructuredAddress] = None,
                             coordinates: Optional[Coordinates] = None) -> dict:
-        try:
-            assert installation_id, 'installation_id is required.'
+        if not installation_id:
+            raise IncogniaError('installation_id is required.')
 
+        try:
             access_token, token_type = self.__token_manager.get()
             headers = {
                 'Content-type': 'application/json',
@@ -38,16 +39,14 @@ class IncogniaAPI:
 
             return json.loads(response.content.decode('utf-8'))
 
-        except AssertionError as e:
-            raise IncogniaError(e)
-
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
 
     def get_latest_signup_assessment(self, signup_id: str) -> dict:
-        try:
-            assert signup_id, 'id is required.'
+        if not signup_id:
+            raise IncogniaError('signup_id is required.')
 
+        try:
             access_token, token_type = self.__token_manager.get()
             headers = {
                 'Authorization': f'{token_type} {access_token}',
@@ -56,5 +55,6 @@ class IncogniaAPI:
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
-        except AssertionError as e:
-            raise IncogniaError(e)
+
+        except requests.HTTPError as e:
+            raise IncogniaHTTPError(e)
