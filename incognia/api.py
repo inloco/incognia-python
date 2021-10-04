@@ -6,7 +6,7 @@ import requests
 
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
-from .feedback_events import FeedbackEvents, FeedbackEventType  # type: ignore
+from .feedback_events import FeedbackEventType
 from .models import Coordinates, StructuredAddress
 from .token_manager import TokenManager
 
