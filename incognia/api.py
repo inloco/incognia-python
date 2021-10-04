@@ -6,7 +6,7 @@ import requests
 
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
-from .feedback_events import FeedbackEventType
+from .feedback_events import FeedbackEvents, FeedbackEventType  # type: ignore
 from .models import Coordinates, StructuredAddress
 from .token_manager import TokenManager
 
@@ -71,7 +71,7 @@ class IncogniaAPI:
                       payment_id: Optional[str] = None,
                       signup_id: Optional[str] = None,
                       account_id: Optional[str] = None,
-                      installation_id: Optional[str] = None):
+                      installation_id: Optional[str] = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
         if not timestamp:
@@ -84,12 +84,12 @@ class IncogniaAPI:
                 'Authorization': f'{token_type} {access_token}'
             }
 
-            def total_milliseconds(t: dt.datetime):
-                return (t - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0
+            def total_milliseconds_since_epoch(t: dt.datetime) -> int:
+                return int((t - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0)
 
             body = {
                 'event': event,
-                'timestamp': total_milliseconds(timestamp),
+                'timestamp': total_milliseconds_since_epoch(timestamp),
                 'external_id': external_id,
                 'login_id': login_id,
                 'payment_id': payment_id,
@@ -101,6 +101,5 @@ class IncogniaAPI:
             response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
             response.raise_for_status()
 
-            return json.loads(response.content.decode('utf-8'))
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e)
