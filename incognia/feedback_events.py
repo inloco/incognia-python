@@ -8,8 +8,10 @@ class FeedbackEvents:
     SIGNUP_DECLINED: Final[FeedbackEventType] = "signup_declined"
     PAYMENT_ACCEPTED: Final[FeedbackEventType] = "payment_accepted"
     PAYMENT_DECLINED: Final[FeedbackEventType] = "payment_declined"
-    PAYMENT_DECLINED___BY_RISK_ANALYSIS: Final[FeedbackEventType] = "payment_declined___by_risk_analysis"
-    PAYMENT_DECLINED_BY_MANUAL_REVIEW: Final[FeedbackEventType] = "payment_declined_by_manual_review"
+    PAYMENT_DECLINED___BY_RISK_ANALYSIS: Final[FeedbackEventType] = \
+        "payment_declined___by_risk_analysis"
+    PAYMENT_DECLINED_BY_MANUAL_REVIEW: Final[FeedbackEventType] = \
+        "payment_declined_by_manual_review"
     PAYMENT_DECLINED_BY_BUSINESS: Final[FeedbackEventType] = "payment_declined_by_business"
     PAYMENT_DECLINED_BY_ACQUIRER: Final[FeedbackEventType] = "payment_declined_by_acquirer"
     LOGIN_ACCEPTED: Final[FeedbackEventType] = "login_accepted"
