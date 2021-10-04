@@ -21,9 +21,9 @@ class TestTokenManager(TestCase):
     SHORT_EXPIRATION_JSON_POST_RESPONSE: Final[ascii] = b'{ "access_token": "S_E_ACCESS_TOKEN",' \
                                                         b' "token_type": "S_E_TOKEN_TYPE",' \
                                                         b' "expires_in": 5 }'
-    BASE64URL: Final[str] = base64.urlsafe_b64encode(
+    CLIENT_ID_AND_SECRET_ENCODED: Final[str] = base64.urlsafe_b64encode(
         f'{CLIENT_ID}:{CLIENT_SECRET}'.encode('ascii')).decode('utf-8')
-    HEADERS: Final[dict] = {'Authorization': f'Basic {BASE64URL}'}
+    HEADERS: Final[dict] = {'Authorization': f'Basic {CLIENT_ID_AND_SECRET_ENCODED}'}
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
 
