@@ -18,3 +18,9 @@ class StructuredAddress(TypedDict, total=False):
     number: Optional[str]
     complements: Optional[str]
     postal_code: Optional[str]
+
+
+class TransactionAddress(TypedDict, total=False):
+    type: Optional[str]
+    structured_address: Optional[StructuredAddress]
+    address_coordinates: Optional[Coordinates]
