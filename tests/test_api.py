@@ -56,7 +56,7 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_new_signup_when_installation_id_is_invalid_should_raise_an_Exception(
+    def test_register_new_signup_when_installation_id_is_invalid_should_raise_an_IncogniaHTTPError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_post: Mock):
@@ -78,7 +78,7 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get')
-    def test_register_new_signup_when_installation_id_is_empty_should_raise_an_Exception(
+    def test_register_new_signup_when_installation_id_is_empty_should_raise_an_IncogniaError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_post: Mock):
@@ -113,7 +113,7 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.get')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_latest_signup_assessment_when_signup_id_invalid_should_raise_an_Exception(
+    def test_get_latest_signup_assessment_when_signup_id_invalid_should_raise_an_IncogniaHTTPError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_get: Mock):
@@ -134,7 +134,7 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.get')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_latest_signup_assessment_when_signup_id_is_empty_should_raise_an_Exception(
+    def test_get_latest_signup_assessment_when_signup_id_is_empty_should_raise_an_IncogniaError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_get: Mock):
