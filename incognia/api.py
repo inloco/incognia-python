@@ -101,8 +101,5 @@ class IncogniaAPI:
             response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
             response.raise_for_status()
 
-        except TypeError as e:
-            raise IncogniaError(e)
-
         except requests.HTTPError as e:
-            raise IncogniaHTTPError(e)
+            raise IncogniaHTTPError(e) from None
