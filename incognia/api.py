@@ -63,15 +63,15 @@ class IncogniaAPI:
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e) from None
 
-    def send_feedback(self,
-                      event: FeedbackEventType,
-                      timestamp: dt.datetime,
-                      external_id: Optional[str] = None,
-                      login_id: Optional[str] = None,
-                      payment_id: Optional[str] = None,
-                      signup_id: Optional[str] = None,
-                      account_id: Optional[str] = None,
-                      installation_id: Optional[str] = None) -> None:
+    def register_feedback(self,
+                          event: FeedbackEventType,
+                          timestamp: dt.datetime,
+                          external_id: Optional[str] = None,
+                          login_id: Optional[str] = None,
+                          payment_id: Optional[str] = None,
+                          signup_id: Optional[str] = None,
+                          account_id: Optional[str] = None,
+                          installation_id: Optional[str] = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
         if not timestamp:
