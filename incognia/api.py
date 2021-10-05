@@ -7,7 +7,7 @@ import requests
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .feedback_events import FeedbackEventType
-from .models import Coordinates, StructuredAddress, TransactionAddress
+from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
 from .token_manager import TokenManager
 
 
@@ -109,7 +109,9 @@ class IncogniaAPI:
                          installation_id: str,
                          account_id: str,
                          external_id: Optional[str] = None,
-                         addresses: Optional[List[TransactionAddress]] = None) -> dict:
+                         addresses: Optional[List[TransactionAddress]] = None,
+                         payment_value: Optional[PaymentValue] = None,
+                         payment_methods: Optional[List[PaymentMethod]] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -126,7 +128,9 @@ class IncogniaAPI:
                 'installation_id': installation_id,
                 'account_id': account_id,
                 'external_id': external_id,
-                'addresses': addresses
+                'addresses': addresses,
+                'payment_value': payment_value,
+                'payment_methods': payment_methods
             }
             data = json.dumps({k: v for (k, v) in body.items() if v is not None},
                               ensure_ascii=False).encode('utf-8')
