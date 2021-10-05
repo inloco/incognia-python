@@ -17,7 +17,7 @@ class IncogniaAPI:
                             installation_id: str,
                             address_line: Optional[str] = None,
                             structured_address: Optional[StructuredAddress] = None,
-                            coordinates: Optional[Coordinates] = None) -> dict:
+                            address_coordinates: Optional[Coordinates] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
 
@@ -31,7 +31,7 @@ class IncogniaAPI:
                 'installation_id': installation_id,
                 'address_line': address_line,
                 'structured_address': structured_address,
-                'coordinates': coordinates
+                'address_coordinates': address_coordinates
             }
             data = json.dumps({k: v for (k, v) in body.items() if v is not None})
             response = requests.post(Endpoints.SIGNUPS, headers=headers, data=data)
