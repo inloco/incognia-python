@@ -27,7 +27,8 @@ class TestIncogniaAPI(TestCase):
     LATEST_SIGNUP_HEADER: Final[dict] = {
         'Authorization': f'{TOKEN_VALUES.token_type} {TOKEN_VALUES.access_token}'
     }
-    REGISTER_SIGNUP_DATA: Final[str] = f'{{"installation_id": "{INSTALLATION_ID}"}}'
+    REGISTER_SIGNUP_DATA: Final[ascii] = f'{{"installation_id": "{INSTALLATION_ID}"}}' \
+        .encode('utf-8')
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
 
