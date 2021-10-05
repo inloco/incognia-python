@@ -40,7 +40,7 @@ class IncogniaAPI:
             return json.loads(response.content.decode('utf-8'))
 
         except requests.HTTPError as e:
-            raise IncogniaHTTPError(e)
+            raise IncogniaHTTPError(e) from None
 
     def get_latest_signup_assessment(self, signup_id: str) -> dict:
         if not signup_id:
@@ -57,4 +57,4 @@ class IncogniaAPI:
             return json.loads(response.content.decode('utf-8'))
 
         except requests.HTTPError as e:
-            raise IncogniaHTTPError(e)
+            raise IncogniaHTTPError(e) from None
