@@ -200,20 +200,6 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_send_feedback_when_timestamp_is_not_a_datetime_should_raise_an_IncogniaError(
-            self,
-            mock_token_manager_get: Mock,
-            mock_requests_post: Mock):
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        self.assertRaises(IncogniaError, api.send_feedback, event=self.VALID_EVENT_FEEDBACK_TYPE,
-                          timestamp=0)
-
-        mock_token_manager_get.assert_not_called()
-        mock_requests_post.assert_not_called()
-
-    @patch('requests.post')
-    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_send_feedback_when_required_fields_are_invalid_should_raise_an_IncogniaHTTPError(
             self,
             mock_token_manager_get: Mock,
