@@ -43,7 +43,7 @@ class IncogniaAPI:
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e) from None
 
-    def get_latest_signup_assessment(self, signup_id: str) -> dict:
+    def get_signup_assessment(self, signup_id: str) -> dict:
         if not signup_id:
             raise IncogniaError('signup_id is required.')
 
