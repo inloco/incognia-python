@@ -24,7 +24,7 @@ class TestIncogniaAPI(TestCase):
         'Content-type': 'application/json',
         'Authorization': f'{TOKEN_VALUES.token_type} {TOKEN_VALUES.access_token}'
     }
-    LATEST_SIGNUP_HEADER: Final[dict] = {
+    GET_SIGNUP_HEADER: Final[dict] = {
         'Authorization': f'{TOKEN_VALUES.token_type} {TOKEN_VALUES.access_token}'
     }
     REGISTER_SIGNUP_DATA: Final[ascii] = f'{{"installation_id": "{INSTALLATION_ID}"}}' \
@@ -92,7 +92,7 @@ class TestIncogniaAPI(TestCase):
 
     @patch('requests.get')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_latest_signup_assessment_when_signup_id_is_valid_should_return_a_valid_dict(
+    def test_get_signup_assessment_when_signup_id_is_valid_should_return_a_valid_dict(
             self,
             mock_token_manager_get: Mock,
             mock_requests_get: Mock):
@@ -104,17 +104,17 @@ class TestIncogniaAPI(TestCase):
         mock_requests_get.configure_mock(return_value=get_mocked_response())
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-        request_response = api.get_latest_signup_assessment(signup_id=self.SIGNUP_ID)
+        request_response = api.get_signup_assessment(signup_id=self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
         mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
-                                             headers=self.LATEST_SIGNUP_HEADER)
+                                             headers=self.GET_SIGNUP_HEADER)
 
         self.assertEqual(request_response, json.loads(self.JSON_SIGNUP_RESPONSE.decode('utf-8')))
 
     @patch('requests.get')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_latest_signup_assessment_when_signup_id_invalid_should_raise_an_IncogniaHTTPError(
+    def test_get_signup_assessment_when_signup_id_invalid_should_raise_an_IncogniaHTTPError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_get: Mock):
@@ -127,21 +127,21 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaHTTPError, api.get_latest_signup_assessment, self.SIGNUP_ID)
+        self.assertRaises(IncogniaHTTPError, api.get_signup_assessment, self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
         mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
-                                             headers=self.LATEST_SIGNUP_HEADER)
+                                             headers=self.GET_SIGNUP_HEADER)
 
     @patch('requests.get')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_latest_signup_assessment_when_signup_id_is_empty_should_raise_an_IncogniaError(
+    def test_get_signup_assessment_when_signup_id_is_empty_should_raise_an_IncogniaError(
             self,
             mock_token_manager_get: Mock,
             mock_requests_get: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.get_latest_signup_assessment, '')
+        self.assertRaises(IncogniaError, api.get_signup_assessment, '')
 
         mock_token_manager_get.assert_not_called()
         mock_requests_get.assert_not_called()
