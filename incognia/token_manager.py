@@ -41,8 +41,9 @@ class TokenManager:
                 seconds=int(parsed_response['expires_in']))
 
             self.__token_values, self.__expiration_time = token_values, expiration_time
+
         except requests.HTTPError as e:
-            raise IncogniaHTTPError(e)
+            raise IncogniaHTTPError(e) from None
 
     def __is_expired(self) -> bool:
         return (self.__expiration_time - dt.datetime.now()).total_seconds() <= \
