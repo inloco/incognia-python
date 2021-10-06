@@ -97,7 +97,8 @@ class IncogniaAPI:
                 'account_id': account_id,
                 'installation_id': installation_id
             }
-            data = json.dumps({k: v for (k, v) in body.items() if v is not None})
+            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
+                              ensure_ascii=False).encode('utf-8')
             response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
             response.raise_for_status()
 
