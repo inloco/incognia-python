@@ -1,9 +1,10 @@
-from typing import Final
+from typing import Final, Literal
 
 
 class Endpoints:
-    BASE: Final[str] = 'https://api.us.incognia.com'
+    def __init__(self, region: Literal['br', 'us']):
+        self.base: Final[str] = f'https://api.{region}.incognia.com'
 
-    TOKEN: Final[str] = f'{BASE}/api/v1/token'
-    SIGNUPS: Final[str] = f'{BASE}/api/v2/onboarding/signups'
-    TRANSACTIONS: Final[str] = f'{BASE}/api/v2/authentication/transactions'
+        self.token: Final[str] = f'{self.base}/api/v1/token'
+        self.signups: Final[str] = f'{self.base}/api/v2/onboarding/signups'
+        self.transactions: Final[str] = f'{self.base}/api/v2/authentication/transactions'
