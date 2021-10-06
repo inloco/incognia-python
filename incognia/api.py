@@ -1,5 +1,5 @@
 import json
-from typing import Optional
+from typing import Optional, Literal
 
 import requests
 
@@ -10,8 +10,9 @@ from .token_manager import TokenManager
 
 
 class IncogniaAPI:
-    def __init__(self, access_token: str, token_type: str):
-        self.__token_manager = TokenManager(access_token, token_type)
+    def __init__(self, access_token: str, token_type: str, region: Literal['br', 'us'] = 'us'):
+        self.__endpoints = Endpoints(region)
+        self.__token_manager = TokenManager(access_token, token_type, self.__endpoints)
 
     def register_new_signup(self,
                             installation_id: str,
@@ -35,7 +36,7 @@ class IncogniaAPI:
             }
             data = json.dumps({k: v for (k, v) in body.items() if v is not None},
                               ensure_ascii=False).encode('utf-8')
-            response = requests.post(Endpoints.SIGNUPS, headers=headers, data=data)
+            response = requests.post(self.__endpoints.signups, headers=headers, data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
@@ -52,7 +53,7 @@ class IncogniaAPI:
             headers = {
                 'Authorization': f'{token_type} {access_token}',
             }
-            response = requests.get(f'{Endpoints.SIGNUPS}/{signup_id}', headers=headers)
+            response = requests.get(f'{self.__endpoints.signups}/{signup_id}', headers=headers)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
