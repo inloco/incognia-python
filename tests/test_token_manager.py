@@ -26,6 +26,7 @@ class TestTokenManager(TestCase):
     HEADERS: Final[dict] = {'Authorization': f'Basic {CLIENT_ID_AND_SECRET_ENCODED}'}
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
+    ENDPOINTS: Final[Endpoints] = Endpoints('us')
 
     @patch('requests.post')
     def test_get_when_credentials_are_valid_should_return_a_valid_token(self,
@@ -37,9 +38,9 @@ class TestTokenManager(TestCase):
 
         mock_requests_post.configure_mock(return_value=get_mocked_response())
 
-        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
+        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET, self.ENDPOINTS)
         token_values = token_manager.get()
-        mock_requests_post.assert_called_with(url=Endpoints.TOKEN, headers=self.HEADERS,
+        mock_requests_post.assert_called_with(url=self.ENDPOINTS.token, headers=self.HEADERS,
                                               auth=(self.CLIENT_ID, self.CLIENT_SECRET))
         self.assertEqual(token_values, self.TOKEN_VALUES)
 
@@ -54,16 +55,16 @@ class TestTokenManager(TestCase):
 
         mock_requests_post.configure_mock(return_value=get_mocked_response())
 
-        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
+        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET, self.ENDPOINTS)
         self.assertRaises(IncogniaHTTPError, token_manager.get)
-        mock_requests_post.assert_called_with(url=Endpoints.TOKEN, headers=self.HEADERS,
+        mock_requests_post.assert_called_with(url=self.ENDPOINTS.token, headers=self.HEADERS,
                                               auth=(self.CLIENT_ID, self.CLIENT_SECRET))
 
     @patch('requests.post')
     def test_get_when_token_is_expired_should_return_a_new_valid_token(self,
                                                                        mock_requests_post:
                                                                        Mock):
-        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET)
+        token_manager = TokenManager(self.CLIENT_ID, self.CLIENT_SECRET, self.ENDPOINTS)
 
         def get_first_mocked_response() -> requests.Response:
             response = requests.Response()
@@ -75,7 +76,7 @@ class TestTokenManager(TestCase):
 
         first_token_values = token_manager.get()
 
-        mock_requests_post.assert_called_with(url=Endpoints.TOKEN, headers=self.HEADERS,
+        mock_requests_post.assert_called_with(url=self.ENDPOINTS.token, headers=self.HEADERS,
                                               auth=(self.CLIENT_ID, self.CLIENT_SECRET))
 
         def get_second_mocked_response() -> requests.Response:
@@ -88,7 +89,7 @@ class TestTokenManager(TestCase):
 
         second_token_values = token_manager.get()
 
-        mock_requests_post.assert_called_with(url=Endpoints.TOKEN, headers=self.HEADERS,
+        mock_requests_post.assert_called_with(url=self.ENDPOINTS.token, headers=self.HEADERS,
                                               auth=(self.CLIENT_ID, self.CLIENT_SECRET))
 
         self.assertEqual(first_token_values, self.SHORT_EXPIRATION_TOKEN_VALUES)
