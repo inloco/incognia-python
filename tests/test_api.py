@@ -36,10 +36,10 @@ class TestIncogniaAPI(TestCase):
     VALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'valid_event_feedback_type'
     INVALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'invalid_event_feedback_type'
     TIMESTAMP: Final[dt.datetime] = dt.datetime.utcfromtimestamp(0)
-    SEND_VALID_FEEDBACK_DATA: Final[str] = f'{{"event": "{VALID_EVENT_FEEDBACK_TYPE}",' \
-                                           f' "timestamp": 0}}'
-    SEND_INVALID_FEEDBACK_DATA: Final[str] = f'{{"event": "{INVALID_EVENT_FEEDBACK_TYPE}",' \
-                                             f' "timestamp": 0}}'
+    SEND_VALID_FEEDBACK_DATA: Final[ascii] = f'{{"event": "{VALID_EVENT_FEEDBACK_TYPE}",' \
+                                             f' "timestamp": 0}}'.encode('utf-8')
+    SEND_INVALID_FEEDBACK_DATA: Final[ascii] = f'{{"event": "{INVALID_EVENT_FEEDBACK_TYPE}",' \
+                                               f' "timestamp": 0}}'.encode('utf-8')
     ENDPOINTS: Final[Endpoints] = Endpoints('us')
 
     @patch('requests.post')
