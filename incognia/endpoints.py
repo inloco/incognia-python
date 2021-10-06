@@ -7,4 +7,5 @@ class Endpoints:
 
         self.token: Final[str] = f'{self.base}/api/v1/token'
         self.signups: Final[str] = f'{self.base}/api/v2/onboarding/signups'
+        self.feedbacks: Final[str] = f'{self.base}/api/v2/feedbacks'
         self.transactions: Final[str] = f'{self.base}/api/v2/authentication/transactions'
