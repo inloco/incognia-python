@@ -17,9 +17,10 @@ class TokenValues(NamedTuple):
 class TokenManager:
     TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
-    def __init__(self, client_id: str, client_secret: str):
+    def __init__(self, client_id: str, client_secret: str, endpoints: Endpoints):
         self.__client_id: str = client_id
         self.__client_secret: str = client_secret
+        self.__endpoints: Endpoints = endpoints
         self.__token_values: Optional[TokenValues] = None
         self.__expiration_time: Optional[dt.datetime] = None
 
@@ -30,7 +31,7 @@ class TokenManager:
         headers = {'Authorization': f'Basic {client_id_and_secret_encoded}'}
 
         try:
-            response = requests.post(url=Endpoints.TOKEN, headers=headers,
+            response = requests.post(url=self.__endpoints.token, headers=headers,
                                      auth=(client_id, client_secret))
             response.raise_for_status()
 
