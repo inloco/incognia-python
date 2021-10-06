@@ -31,6 +31,7 @@ class TestIncogniaAPI(TestCase):
         .encode('utf-8')
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
+    ENDPOINTS: Final[Endpoints] = Endpoints('us')
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
@@ -49,7 +50,7 @@ class TestIncogniaAPI(TestCase):
         request_response = api.register_new_signup(installation_id=self.INSTALLATION_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(Endpoints.SIGNUPS,
+        mock_requests_post.assert_called_with(self.ENDPOINTS.signups,
                                               headers=self.REGISTER_SIGNUP_HEADERS,
                                               data=self.REGISTER_SIGNUP_DATA)
 
@@ -73,7 +74,7 @@ class TestIncogniaAPI(TestCase):
         self.assertRaises(IncogniaHTTPError, api.register_new_signup, self.INSTALLATION_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(Endpoints.SIGNUPS,
+        mock_requests_post.assert_called_with(self.ENDPOINTS.signups,
                                               headers=self.REGISTER_SIGNUP_HEADERS,
                                               data=self.REGISTER_SIGNUP_DATA)
 
@@ -107,7 +108,7 @@ class TestIncogniaAPI(TestCase):
         request_response = api.get_signup_assessment(signup_id=self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
+        mock_requests_get.assert_called_with(f'{self.ENDPOINTS.signups}/{self.SIGNUP_ID}',
                                              headers=self.GET_SIGNUP_HEADER)
 
         self.assertEqual(request_response, json.loads(self.JSON_SIGNUP_RESPONSE.decode('utf-8')))
@@ -130,7 +131,7 @@ class TestIncogniaAPI(TestCase):
         self.assertRaises(IncogniaHTTPError, api.get_signup_assessment, self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
+        mock_requests_get.assert_called_with(f'{self.ENDPOINTS.signups}/{self.SIGNUP_ID}',
                                              headers=self.GET_SIGNUP_HEADER)
 
     @patch('requests.get')
