@@ -141,3 +141,34 @@ class IncogniaAPI:
 
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e) from None
+
+    def register_login(self,
+                       installation_id: str,
+                       account_id: str,
+                       external_id: Optional[str] = None) -> dict:
+        if not installation_id:
+            raise IncogniaError('installation_id is required.')
+        if not account_id:
+            raise IncogniaError('account_id is required.')
+
+        try:
+            access_token, token_type = self.__token_manager.get()
+            headers = {
+                'Content-type': 'application/json',
+                'Authorization': f'{token_type} {access_token}'
+            }
+            body = {
+                'type': 'login',
+                'installation_id': installation_id,
+                'account_id': account_id,
+                'external_id': external_id,
+            }
+            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
+                              ensure_ascii=False).encode('utf-8')
+            response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
+            response.raise_for_status()
+
+            return json.loads(response.content.decode('utf-8'))
+
+        except requests.HTTPError as e:
+            raise IncogniaHTTPError(e) from None
