@@ -10,9 +10,9 @@ from .token_manager import TokenManager
 
 
 class IncogniaAPI:
-    def __init__(self, access_token: str, token_type: str, region: Literal['br', 'us'] = 'us'):
+    def __init__(self, client_id: str, client_secret: str, region: Literal['br', 'us'] = 'us'):
         self.__endpoints = Endpoints(region)
-        self.__token_manager = TokenManager(access_token, token_type, self.__endpoints)
+        self.__token_manager = TokenManager(client_id, client_secret, self.__endpoints)
 
     def register_new_signup(self,
                             installation_id: str,
