@@ -8,7 +8,7 @@
 You can install the IncogniaAPI using the following command:
 
 ```shell
-todo
+pip install incognia-python
 ```
 
 ## Usage
