@@ -331,12 +331,14 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        api.register_login(self.INSTALLATION_ID, self.ACCOUNT_ID)
+        request_response = api.register_login(self.INSTALLATION_ID, self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
         mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_VALID_LOGIN_DATA)
+
+        self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
