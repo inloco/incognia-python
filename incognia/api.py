@@ -1,20 +1,28 @@
 import datetime as dt
 import json
-from typing import Optional, List, Literal
+from typing import Final, Optional, List, Literal
 
 import requests
 
+from .datetime_util import total_milliseconds_since_epoch
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .feedback_events import FeedbackEventType
+from .json_util import encode
 from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
 from .token_manager import TokenManager
 
 
 class IncogniaAPI:
+    JSON_CONTENT_HEADER: Final[dict] = {'Content-type': 'application/json'}
+
     def __init__(self, client_id: str, client_secret: str, region: Literal['br', 'us'] = 'us'):
         self.__endpoints = Endpoints(region)
         self.__token_manager = TokenManager(client_id, client_secret, self.__endpoints)
+
+    def __get_authorization_header(self) -> dict:
+        access_token, token_type = self.__token_manager.get()
+        return {'Authorization': f'{token_type} {access_token}'}
 
     def register_new_signup(self,
                             installation_id: str,
@@ -25,19 +33,15 @@ class IncogniaAPI:
             raise IncogniaError('installation_id is required.')
 
         try:
-            access_token, token_type = self.__token_manager.get()
-            headers = {
-                'Content-type': 'application/json',
-                'Authorization': f'{token_type} {access_token}'
-            }
+            headers = self.__get_authorization_header()
+            headers.update(self.JSON_CONTENT_HEADER)
             body = {
                 'installation_id': installation_id,
                 'address_line': address_line,
                 'structured_address': structured_address,
                 'address_coordinates': address_coordinates
             }
-            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
-                              ensure_ascii=False).encode('utf-8')
+            data = encode(body)
             response = requests.post(self.__endpoints.signups, headers=headers, data=data)
             response.raise_for_status()
 
@@ -51,10 +55,7 @@ class IncogniaAPI:
             raise IncogniaError('signup_id is required.')
 
         try:
-            access_token, token_type = self.__token_manager.get()
-            headers = {
-                'Authorization': f'{token_type} {access_token}',
-            }
+            headers = self.__get_authorization_header()
             response = requests.get(f'{self.__endpoints.signups}/{signup_id}', headers=headers)
             response.raise_for_status()
 
@@ -78,15 +79,8 @@ class IncogniaAPI:
             raise IncogniaError('timestamp is required.')
 
         try:
-            access_token, token_type = self.__token_manager.get()
-            headers = {
-                'Content-type': 'application/json',
-                'Authorization': f'{token_type} {access_token}'
-            }
-
-            def total_milliseconds_since_epoch(t: dt.datetime) -> int:
-                return int((t - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0)
-
+            headers = self.__get_authorization_header()
+            headers.update(self.JSON_CONTENT_HEADER)
             body = {
                 'event': event,
                 'timestamp': total_milliseconds_since_epoch(timestamp),
@@ -97,8 +91,7 @@ class IncogniaAPI:
                 'account_id': account_id,
                 'installation_id': installation_id
             }
-            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
-                              ensure_ascii=False).encode('utf-8')
+            data = encode(body)
             response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
             response.raise_for_status()
 
@@ -118,11 +111,8 @@ class IncogniaAPI:
             raise IncogniaError('account_id is required.')
 
         try:
-            access_token, token_type = self.__token_manager.get()
-            headers = {
-                'Content-type': 'application/json',
-                'Authorization': f'{token_type} {access_token}'
-            }
+            headers = self.__get_authorization_header()
+            headers.update(self.JSON_CONTENT_HEADER)
             body = {
                 'type': 'payment',
                 'installation_id': installation_id,
@@ -132,8 +122,7 @@ class IncogniaAPI:
                 'payment_value': payment_value,
                 'payment_methods': payment_methods
             }
-            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
-                              ensure_ascii=False).encode('utf-8')
+            data = encode(body)
             response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
             response.raise_for_status()
 
@@ -152,19 +141,15 @@ class IncogniaAPI:
             raise IncogniaError('account_id is required.')
 
         try:
-            access_token, token_type = self.__token_manager.get()
-            headers = {
-                'Content-type': 'application/json',
-                'Authorization': f'{token_type} {access_token}'
-            }
+            headers = self.__get_authorization_header()
+            headers.update(self.JSON_CONTENT_HEADER)
             body = {
                 'type': 'login',
                 'installation_id': installation_id,
                 'account_id': account_id,
                 'external_id': external_id,
             }
-            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
-                              ensure_ascii=False).encode('utf-8')
+            data = encode(body)
             response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
             response.raise_for_status()
 
