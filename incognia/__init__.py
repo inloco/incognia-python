@@ -1,1 +1,1 @@
-__all__ = ['endpoints', 'exceptions', 'api', 'models', 'token_manager']
+__all__ = ['api', 'endpoints', 'exceptions', 'feedback_events', 'models', 'token_manager']
