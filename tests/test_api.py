@@ -50,6 +50,13 @@ class TestIncogniaAPI(TestCase):
         '{"type": "payment",' \
         f' "installation_id": "{INVALID_INSTALLATION_ID}",' \
         f' "account_id": "{INVALID_ACCOUNT_ID}"}}'.encode('utf-8')
+    REGISTER_VALID_LOGIN_DATA: Final[ascii] = '{"type": "login",' \
+                                              f' "installation_id": "{INSTALLATION_ID}",' \
+                                              f' "account_id": "{ACCOUNT_ID}"}}'.encode('utf-8')
+    REGISTER_INVALID_LOGIN_DATA: Final[ascii] = \
+        '{"type": "login",' \
+        f' "installation_id": "{INVALID_INSTALLATION_ID}",' \
+        f' "account_id": "{INVALID_ACCOUNT_ID}"}}'.encode('utf-8')
     ENDPOINTS: Final[Endpoints] = Endpoints('us')
 
     @patch('requests.post')
@@ -308,3 +315,79 @@ class TestIncogniaAPI(TestCase):
         mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_INVALID_PAYMENT_DATA)
+
+    @patch('requests.post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_login_when_required_fields_are_valid_should_work(
+            self,
+            mock_token_manager_get: Mock,
+            mock_requests_post: Mock):
+        def get_mocked_response() -> requests.Response:
+            response = requests.Response()
+            response._content, response.status_code = self.JSON_RESPONSE, self.OK_STATUS_CODE
+            return response
+
+        mock_requests_post.configure_mock(return_value=get_mocked_response())
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        request_response = api.register_login(self.INSTALLATION_ID, self.ACCOUNT_ID)
+
+        mock_token_manager_get.assert_called()
+        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+                                              headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              data=self.REGISTER_VALID_LOGIN_DATA)
+
+        self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
+
+    @patch('requests.post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_login_when_installation_id_is_empty_should_raise_an_IncogniaError(
+            self,
+            mock_token_manager_get: Mock,
+            mock_requests_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError, api.register_login, installation_id='',
+                          account_id=self.ACCOUNT_ID)
+
+        mock_token_manager_get.assert_not_called()
+        mock_requests_post.assert_not_called()
+
+    @patch('requests.post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_login_when_account_id_is_empty_should_raise_an_IncogniaError(
+            self,
+            mock_token_manager_get: Mock,
+            mock_requests_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError, api.register_login, installation_id=self.INSTALLATION_ID,
+                          account_id='')
+
+        mock_token_manager_get.assert_not_called()
+        mock_requests_post.assert_not_called()
+
+    @patch('requests.post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_login_when_required_fields_are_invalid_should_raise_an_IncogniaHTTPError(
+            self,
+            mock_token_manager_get: Mock,
+            mock_requests_post: Mock):
+        def get_mocked_response() -> requests.Response:
+            response = requests.Response()
+            response.status_code = self.CLIENT_ERROR_CODE
+            return response
+
+        mock_requests_post.configure_mock(return_value=get_mocked_response())
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaHTTPError, api.register_login,
+                          installation_id=self.INVALID_INSTALLATION_ID,
+                          account_id=self.INVALID_ACCOUNT_ID)
+
+        mock_token_manager_get.assert_called()
+        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+                                              headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              data=self.REGISTER_INVALID_LOGIN_DATA)
