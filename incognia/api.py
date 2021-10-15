@@ -1,13 +1,13 @@
 import datetime as dt
 import json
-from typing import Optional, Literal
+from typing import Optional, List, Literal
 
 import requests
 
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .feedback_events import FeedbackEventType
-from .models import Coordinates, StructuredAddress
+from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
 from .token_manager import TokenManager
 
 
@@ -101,6 +101,43 @@ class IncogniaAPI:
                               ensure_ascii=False).encode('utf-8')
             response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
             response.raise_for_status()
+
+        except requests.HTTPError as e:
+            raise IncogniaHTTPError(e) from None
+
+    def register_payment(self,
+                         installation_id: str,
+                         account_id: str,
+                         external_id: Optional[str] = None,
+                         addresses: Optional[List[TransactionAddress]] = None,
+                         payment_value: Optional[PaymentValue] = None,
+                         payment_methods: Optional[List[PaymentMethod]] = None) -> dict:
+        if not installation_id:
+            raise IncogniaError('installation_id is required.')
+        if not account_id:
+            raise IncogniaError('account_id is required.')
+
+        try:
+            access_token, token_type = self.__token_manager.get()
+            headers = {
+                'Content-type': 'application/json',
+                'Authorization': f'{token_type} {access_token}'
+            }
+            body = {
+                'type': 'payment',
+                'installation_id': installation_id,
+                'account_id': account_id,
+                'external_id': external_id,
+                'addresses': addresses,
+                'payment_value': payment_value,
+                'payment_methods': payment_methods
+            }
+            data = json.dumps({k: v for (k, v) in body.items() if v is not None},
+                              ensure_ascii=False).encode('utf-8')
+            response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
+            response.raise_for_status()
+
+            return json.loads(response.content.decode('utf-8'))
 
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e) from None
