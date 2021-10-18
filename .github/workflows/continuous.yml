@@ -5,11 +5,7 @@ on: [ push ]
 jobs:
   test:
     name: Test
-    runs-on:
-      - self-hosted
-      - ci
-      - linux
-      - amd64
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ 3.8, 3.9 ]
