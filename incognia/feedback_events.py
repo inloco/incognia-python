@@ -18,7 +18,7 @@ class FeedbackEvents:
     LOGIN_ACCEPTED: Final[FeedbackEventType] = 'login_accepted'
     LOGIN_DECLINED: Final[FeedbackEventType] = 'login_declined'
     VERIFIED: Final[FeedbackEventType] = 'verified'
-    NOT_VERIFIED: Final[FeedbackEventType] = 'not_verified'
+    IDENTITY_FRAUD: Final[FeedbackEventType] = 'identity_fraud'
     ACCOUNT_TAKEOVER: Final[FeedbackEventType] = 'account_takeover'
     CHARGEBACK: Final[FeedbackEventType] = 'chargeback'
     MPOS_FRAUD: Final[FeedbackEventType] = 'mpos_fraud'
