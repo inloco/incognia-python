@@ -9,7 +9,6 @@ import requests
 from incognia.api import IncogniaAPI
 from incognia.endpoints import Endpoints
 from incognia.exceptions import IncogniaHTTPError, IncogniaError
-from incognia.feedback_events import FeedbackEventType
 from incognia.token_manager import TokenValues, TokenManager
 
 
@@ -36,8 +35,8 @@ class TestIncogniaAPI(TestCase):
         .encode('utf-8')
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
-    VALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'valid_event_feedback_type'
-    INVALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'invalid_event_feedback_type'
+    VALID_EVENT_FEEDBACK_TYPE: Final[str] = 'valid_event_feedback_type'
+    INVALID_EVENT_FEEDBACK_TYPE: Final[str] = 'invalid_event_feedback_type'
     TIMESTAMP: Final[dt.datetime] = dt.datetime.utcfromtimestamp(0)
     REGISTER_VALID_FEEDBACK_DATA: Final[ascii] = f'{{"event": "{VALID_EVENT_FEEDBACK_TYPE}",' \
                                                  f' "timestamp": 0}}'.encode('utf-8')

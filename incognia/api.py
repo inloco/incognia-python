@@ -7,7 +7,6 @@ import requests
 from .datetime_util import total_milliseconds_since_epoch
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
-from .feedback_events import FeedbackEventType
 from .json_util import encode
 from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
 from .token_manager import TokenManager
@@ -64,7 +63,7 @@ class IncogniaAPI:
             raise IncogniaHTTPError(e) from None
 
     def register_feedback(self,
-                          event: FeedbackEventType,
+                          event: str,
                           timestamp: dt.datetime,
                           external_id: Optional[str] = None,
                           login_id: Optional[str] = None,

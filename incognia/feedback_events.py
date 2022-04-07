@@ -1,24 +1,23 @@
 from typing import Final
 
-FeedbackEventType = str
-
 
 class FeedbackEvents:
-    SIGNUP_ACCEPTED: Final[FeedbackEventType] = 'signup_accepted'
-    SIGNUP_DECLINED: Final[FeedbackEventType] = 'signup_declined'
-    PAYMENT_ACCEPTED: Final[FeedbackEventType] = 'payment_accepted'
-    PAYMENT_ACCEPTED_BY_THIRD_PARTY: Final[FeedbackEventType] = 'payment_accepted_by_third_party'
-    PAYMENT_DECLINED: Final[FeedbackEventType] = 'payment_declined'
-    PAYMENT_DECLINED_BY_RISK_ANALYSIS: Final[FeedbackEventType] = \
+    SIGNUP_ACCEPTED: Final[str] = 'signup_accepted'
+    SIGNUP_DECLINED: Final[str] = 'signup_declined'
+    PAYMENT_ACCEPTED: Final[str] = 'payment_accepted'
+    PAYMENT_ACCEPTED_BY_THIRD_PARTY: Final[str] = 'payment_accepted_by_third_party'
+    PAYMENT_DECLINED: Final[str] = 'payment_declined'
+    PAYMENT_DECLINED_BY_RISK_ANALYSIS: Final[str] = \
         'payment_declined_by_risk_analysis'
-    PAYMENT_DECLINED_BY_MANUAL_REVIEW: Final[FeedbackEventType] = \
+    PAYMENT_DECLINED_BY_MANUAL_REVIEW: Final[str] = \
         'payment_declined_by_manual_review'
-    PAYMENT_DECLINED_BY_BUSINESS: Final[FeedbackEventType] = 'payment_declined_by_business'
-    PAYMENT_DECLINED_BY_ACQUIRER: Final[FeedbackEventType] = 'payment_declined_by_acquirer'
-    LOGIN_ACCEPTED: Final[FeedbackEventType] = 'login_accepted'
-    LOGIN_DECLINED: Final[FeedbackEventType] = 'login_declined'
-    VERIFIED: Final[FeedbackEventType] = 'verified'
-    IDENTITY_FRAUD: Final[FeedbackEventType] = 'identity_fraud'
-    ACCOUNT_TAKEOVER: Final[FeedbackEventType] = 'account_takeover'
-    CHARGEBACK: Final[FeedbackEventType] = 'chargeback'
-    MPOS_FRAUD: Final[FeedbackEventType] = 'mpos_fraud'
+    PAYMENT_DECLINED_BY_BUSINESS: Final[str] = 'payment_declined_by_business'
+    PAYMENT_DECLINED_BY_ACQUIRER: Final[str] = 'payment_declined_by_acquirer'
+    LOGIN_ACCEPTED: Final[str] = 'login_accepted'
+    LOGIN_DECLINED: Final[str] = 'login_declined'
+    VERIFIED: Final[str] = 'verified'
+    IDENTITY_FRAUD: Final[str] = 'identity_fraud'
+    ACCOUNT_TAKEOVER: Final[str] = 'account_takeover'
+    CHARGEBACK_NOTIFICATION: Final[str] = 'chargeback_notification'
+    CHARGEBACK: Final[str] = 'chargeback'
+    MPOS_FRAUD: Final[str] = 'mpos_fraud'
