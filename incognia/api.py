@@ -102,7 +102,8 @@ class IncogniaAPI:
                          external_id: Optional[str] = None,
                          addresses: Optional[List[TransactionAddress]] = None,
                          payment_value: Optional[PaymentValue] = None,
-                         payment_methods: Optional[List[PaymentMethod]] = None) -> dict:
+                         payment_methods: Optional[List[PaymentMethod]] = None,
+                         evaluate: Optional[bool] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -111,6 +112,7 @@ class IncogniaAPI:
         try:
             headers = self.__get_authorization_header()
             headers.update(self.JSON_CONTENT_HEADER)
+            params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'payment',
                 'installation_id': installation_id,
@@ -121,7 +123,8 @@ class IncogniaAPI:
                 'payment_methods': payment_methods
             }
             data = encode(body)
-            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, data=data)
+            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
+                                     data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
@@ -132,7 +135,8 @@ class IncogniaAPI:
     def register_login(self,
                        installation_id: str,
                        account_id: str,
-                       external_id: Optional[str] = None) -> dict:
+                       external_id: Optional[str] = None,
+                       evaluate: Optional[bool] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -141,14 +145,16 @@ class IncogniaAPI:
         try:
             headers = self.__get_authorization_header()
             headers.update(self.JSON_CONTENT_HEADER)
+            params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'login',
                 'installation_id': installation_id,
                 'account_id': account_id,
-                'external_id': external_id,
+                'external_id': external_id
             }
             data = encode(body)
-            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, data=data)
+            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
+                                     data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))

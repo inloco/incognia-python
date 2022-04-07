@@ -56,6 +56,7 @@ class TestIncogniaAPI(TestCase):
         '{"type": "login",' \
         f' "installation_id": "{INVALID_INSTALLATION_ID}",' \
         f' "account_id": "{INVALID_ACCOUNT_ID}"}}'.encode('utf-8')
+    DEFAULT_PARAMS: Final[None] = None
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
@@ -258,6 +259,7 @@ class TestIncogniaAPI(TestCase):
         mock_token_manager_get.assert_called()
         mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_VALID_PAYMENT_DATA)
 
         self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
@@ -312,6 +314,7 @@ class TestIncogniaAPI(TestCase):
         mock_token_manager_get.assert_called()
         mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_INVALID_PAYMENT_DATA)
 
     @patch('requests.post')
@@ -334,6 +337,7 @@ class TestIncogniaAPI(TestCase):
         mock_token_manager_get.assert_called()
         mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_VALID_LOGIN_DATA)
 
         self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
@@ -388,4 +392,5 @@ class TestIncogniaAPI(TestCase):
         mock_token_manager_get.assert_called()
         mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_INVALID_LOGIN_DATA)
