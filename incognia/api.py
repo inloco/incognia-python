@@ -1,6 +1,6 @@
 import datetime as dt
 import json
-from typing import Final, Optional, List, Literal
+from typing import Final, Optional, List
 
 import requests
 
@@ -16,9 +16,8 @@ from .token_manager import TokenManager
 class IncogniaAPI:
     JSON_CONTENT_HEADER: Final[dict] = {'Content-type': 'application/json'}
 
-    def __init__(self, client_id: str, client_secret: str, region: Literal['br', 'us'] = 'us'):
-        self.__endpoints = Endpoints(region)
-        self.__token_manager = TokenManager(client_id, client_secret, self.__endpoints)
+    def __init__(self, client_id: str, client_secret: str):
+        self.__token_manager = TokenManager(client_id, client_secret)
 
     def __get_authorization_header(self) -> dict:
         access_token, token_type = self.__token_manager.get()
@@ -42,7 +41,7 @@ class IncogniaAPI:
                 'address_coordinates': address_coordinates
             }
             data = encode(body)
-            response = requests.post(self.__endpoints.signups, headers=headers, data=data)
+            response = requests.post(Endpoints.SIGNUPS, headers=headers, data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
@@ -56,7 +55,7 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            response = requests.get(f'{self.__endpoints.signups}/{signup_id}', headers=headers)
+            response = requests.get(f'{Endpoints.SIGNUPS}/{signup_id}', headers=headers)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
@@ -92,7 +91,7 @@ class IncogniaAPI:
                 'installation_id': installation_id
             }
             data = encode(body)
-            response = requests.post(self.__endpoints.feedbacks, headers=headers, data=data)
+            response = requests.post(Endpoints.FEEDBACKS, headers=headers, data=data)
             response.raise_for_status()
 
         except requests.HTTPError as e:
@@ -123,7 +122,7 @@ class IncogniaAPI:
                 'payment_methods': payment_methods
             }
             data = encode(body)
-            response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
+            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
@@ -150,7 +149,7 @@ class IncogniaAPI:
                 'external_id': external_id,
             }
             data = encode(body)
-            response = requests.post(self.__endpoints.transactions, headers=headers, data=data)
+            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, data=data)
             response.raise_for_status()
 
             return json.loads(response.content.decode('utf-8'))
