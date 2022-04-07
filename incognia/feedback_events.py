@@ -6,6 +6,7 @@ class FeedbackEvents:
     SIGNUP_DECLINED: Final[str] = 'signup_declined'
     PAYMENT_ACCEPTED: Final[str] = 'payment_accepted'
     PAYMENT_ACCEPTED_BY_THIRD_PARTY: Final[str] = 'payment_accepted_by_third_party'
+    PAYMENT_ACCEPTED_BY_CONTROL_GROUP: Final[str] = 'payment_accepted_by_control_group'
     PAYMENT_DECLINED: Final[str] = 'payment_declined'
     PAYMENT_DECLINED_BY_RISK_ANALYSIS: Final[str] = \
         'payment_declined_by_risk_analysis'
