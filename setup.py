@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='incognia-python',
-    version='1.1.0',
+    version='1.2.0',
     packages=find_packages(exclude=['tests']),
     license='MIT',
     url='https://github.com/inloco/incognia-python',
