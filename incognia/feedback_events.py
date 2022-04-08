@@ -22,3 +22,8 @@ class FeedbackEvents:
     CHARGEBACK_NOTIFICATION: Final[str] = 'chargeback_notification'
     CHARGEBACK: Final[str] = 'chargeback'
     MPOS_FRAUD: Final[str] = 'mpos_fraud'
+    CHALLENGE_PASSED: Final[str] = 'challenge_passed'
+    CHALLENGE_FAILED: Final[str] = 'challenge_failed'
+    PASSWORD_CHANGED_SUCCESSFULLY: Final[str] = 'password_changed_successfully'
+    PASSWORD_CHANGE_FAILED: Final[str] = 'password_change_failed'
+    PROMOTION_ABUSE: Final[str] = 'promotion_abuse'
