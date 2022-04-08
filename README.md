@@ -20,11 +20,7 @@ Before calling the API methods, you need to create an instance of the `IncogniaA
 ```python3
 from incognia.api import IncogniaAPI
 
-# to use the US region
-api = IncogniaAPI('client-id', 'client-secret', 'us')
-
-# to use the BR region
-api = IncogniaAPI('client-id', 'client-secret', 'br')
+api = IncogniaAPI('client-id', 'client-secret')
 ```
 
 ### Incognia API
@@ -44,7 +40,7 @@ line or coordinates, returning a `dict`, containing the risk assessment and supp
 from incognia.api import IncogniaAPI
 from incognia.models import StructuredAddress, Coordinates
 
-api = IncogniaAPI('client-id', 'client-secret')  # us region is selected by default.
+api = IncogniaAPI('client-id', 'client-secret')
 
 # with structured address, a dict:
 structured_address: StructuredAddress = {
@@ -97,7 +93,7 @@ import datetime as dt
 from incognia.api import IncogniaAPI
 from incognia.feedback_events import FeedbackEvents  # feedbacks are strings.
 
-api = IncogniaAPI('client-id', 'client-secret')  # us region is selected by default.
+api = IncogniaAPI('client-id', 'client-secret')
 
 api.register_feedback(FeedbackEvents.SIGNUP_ACCEPTED, dt.datetime.now(),
                       installation_id='installation-id',
