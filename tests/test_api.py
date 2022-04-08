@@ -9,7 +9,6 @@ import requests
 from incognia.api import IncogniaAPI
 from incognia.endpoints import Endpoints
 from incognia.exceptions import IncogniaHTTPError, IncogniaError
-from incognia.feedback_events import FeedbackEventType
 from incognia.token_manager import TokenValues, TokenManager
 
 
@@ -36,8 +35,8 @@ class TestIncogniaAPI(TestCase):
         .encode('utf-8')
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
-    VALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'valid_event_feedback_type'
-    INVALID_EVENT_FEEDBACK_TYPE: Final[FeedbackEventType] = 'invalid_event_feedback_type'
+    VALID_EVENT_FEEDBACK_TYPE: Final[str] = 'valid_event_feedback_type'
+    INVALID_EVENT_FEEDBACK_TYPE: Final[str] = 'invalid_event_feedback_type'
     TIMESTAMP: Final[dt.datetime] = dt.datetime.utcfromtimestamp(0)
     REGISTER_VALID_FEEDBACK_DATA: Final[ascii] = f'{{"event": "{VALID_EVENT_FEEDBACK_TYPE}",' \
                                                  f' "timestamp": 0}}'.encode('utf-8')
@@ -57,7 +56,7 @@ class TestIncogniaAPI(TestCase):
         '{"type": "login",' \
         f' "installation_id": "{INVALID_INSTALLATION_ID}",' \
         f' "account_id": "{INVALID_ACCOUNT_ID}"}}'.encode('utf-8')
-    ENDPOINTS: Final[Endpoints] = Endpoints('us')
+    DEFAULT_PARAMS: Final[None] = None
 
     @patch('requests.post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
@@ -76,7 +75,7 @@ class TestIncogniaAPI(TestCase):
         request_response = api.register_new_signup(installation_id=self.INSTALLATION_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.signups,
+        mock_requests_post.assert_called_with(Endpoints.SIGNUPS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_SIGNUP_DATA)
 
@@ -100,7 +99,7 @@ class TestIncogniaAPI(TestCase):
         self.assertRaises(IncogniaHTTPError, api.register_new_signup, self.INSTALLATION_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.signups,
+        mock_requests_post.assert_called_with(Endpoints.SIGNUPS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_SIGNUP_DATA)
 
@@ -134,7 +133,7 @@ class TestIncogniaAPI(TestCase):
         request_response = api.get_signup_assessment(signup_id=self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_get.assert_called_with(f'{self.ENDPOINTS.signups}/{self.SIGNUP_ID}',
+        mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
                                              headers=self.AUTH_HEADER)
 
         self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
@@ -157,7 +156,7 @@ class TestIncogniaAPI(TestCase):
         self.assertRaises(IncogniaHTTPError, api.get_signup_assessment, self.SIGNUP_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_get.assert_called_with(f'{self.ENDPOINTS.signups}/{self.SIGNUP_ID}',
+        mock_requests_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
                                              headers=self.AUTH_HEADER)
 
     @patch('requests.get')
@@ -184,7 +183,7 @@ class TestIncogniaAPI(TestCase):
         api.register_feedback(self.VALID_EVENT_FEEDBACK_TYPE, self.TIMESTAMP)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.feedbacks,
+        mock_requests_post.assert_called_with(Endpoints.FEEDBACKS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_VALID_FEEDBACK_DATA)
 
@@ -236,7 +235,7 @@ class TestIncogniaAPI(TestCase):
                           timestamp=self.TIMESTAMP)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.feedbacks,
+        mock_requests_post.assert_called_with(Endpoints.FEEDBACKS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                               data=self.REGISTER_INVALID_FEEDBACK_DATA)
 
@@ -258,8 +257,9 @@ class TestIncogniaAPI(TestCase):
         request_response = api.register_payment(self.INSTALLATION_ID, self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+        mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_VALID_PAYMENT_DATA)
 
         self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
@@ -312,8 +312,9 @@ class TestIncogniaAPI(TestCase):
                           account_id=self.INVALID_ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+        mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_INVALID_PAYMENT_DATA)
 
     @patch('requests.post')
@@ -334,8 +335,9 @@ class TestIncogniaAPI(TestCase):
         request_response = api.register_login(self.INSTALLATION_ID, self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+        mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_VALID_LOGIN_DATA)
 
         self.assertEqual(request_response, json.loads(self.JSON_RESPONSE.decode('utf-8')))
@@ -388,6 +390,7 @@ class TestIncogniaAPI(TestCase):
                           account_id=self.INVALID_ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
-        mock_requests_post.assert_called_with(self.ENDPOINTS.transactions,
+        mock_requests_post.assert_called_with(Endpoints.TRANSACTIONS,
                                               headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                              params=self.DEFAULT_PARAMS,
                                               data=self.REGISTER_INVALID_LOGIN_DATA)
