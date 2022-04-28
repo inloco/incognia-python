@@ -1,8 +1,5 @@
 import datetime as dt
-import json
-from typing import Final, Optional, List
-
-import requests
+from typing import Optional, List
 
 from .datetime_util import total_milliseconds_since_epoch
 from .endpoints import Endpoints
@@ -10,13 +7,13 @@ from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
 from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
 from .token_manager import TokenManager
+from .base_request import BaseRequest, JSON_CONTENT_HEADER
 
 
 class IncogniaAPI:
-    JSON_CONTENT_HEADER: Final[dict] = {'Content-type': 'application/json'}
-
     def __init__(self, client_id: str, client_secret: str):
         self.__token_manager = TokenManager(client_id, client_secret)
+        self.__request = BaseRequest()
 
     def __get_authorization_header(self) -> dict:
         access_token, token_type = self.__token_manager.get()
@@ -32,7 +29,7 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            headers.update(self.JSON_CONTENT_HEADER)
+            headers.update(JSON_CONTENT_HEADER)
             body = {
                 'installation_id': installation_id,
                 'address_line': address_line,
@@ -40,12 +37,9 @@ class IncogniaAPI:
                 'address_coordinates': address_coordinates
             }
             data = encode(body)
-            response = requests.post(Endpoints.SIGNUPS, headers=headers, data=data)
-            response.raise_for_status()
+            return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
 
-            return json.loads(response.content.decode('utf-8'))
-
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
     def get_signup_assessment(self, signup_id: str) -> dict:
@@ -54,12 +48,9 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            response = requests.get(f'{Endpoints.SIGNUPS}/{signup_id}', headers=headers)
-            response.raise_for_status()
+            return self.__request.get(f'{Endpoints.SIGNUPS}/{signup_id}', headers=headers)
 
-            return json.loads(response.content.decode('utf-8'))
-
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
     def register_feedback(self,
@@ -78,7 +69,7 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            headers.update(self.JSON_CONTENT_HEADER)
+            headers.update(JSON_CONTENT_HEADER)
             body = {
                 'event': event,
                 'timestamp': total_milliseconds_since_epoch(timestamp),
@@ -90,10 +81,9 @@ class IncogniaAPI:
                 'installation_id': installation_id
             }
             data = encode(body)
-            response = requests.post(Endpoints.FEEDBACKS, headers=headers, data=data)
-            response.raise_for_status()
+            return self.__request.post(Endpoints.FEEDBACKS, headers=headers, data=data)
 
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
     def register_payment(self,
@@ -111,7 +101,7 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            headers.update(self.JSON_CONTENT_HEADER)
+            headers.update(JSON_CONTENT_HEADER)
             params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'payment',
@@ -123,13 +113,10 @@ class IncogniaAPI:
                 'payment_methods': payment_methods
             }
             data = encode(body)
-            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
-                                     data=data)
-            response.raise_for_status()
+            return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
+                                       data=data)
 
-            return json.loads(response.content.decode('utf-8'))
-
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
     def register_login(self,
@@ -144,7 +131,7 @@ class IncogniaAPI:
 
         try:
             headers = self.__get_authorization_header()
-            headers.update(self.JSON_CONTENT_HEADER)
+            headers.update(JSON_CONTENT_HEADER)
             params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'login',
@@ -153,11 +140,8 @@ class IncogniaAPI:
                 'external_id': external_id
             }
             data = encode(body)
-            response = requests.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
-                                     data=data)
-            response.raise_for_status()
+            return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
+                                       data=data)
 
-            return json.loads(response.content.decode('utf-8'))
-
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
