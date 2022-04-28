@@ -14,7 +14,9 @@ _OS_ARCH: Final[str] = platform.architecture()[0]
 _LANGUAGE_VERSION: Final[str] = platform.python_version()
 
 USER_AGENT_HEADER: Final[dict] = {
-    'User-Agent': f'incognia-python/{_LIBRARY_VERSION} ({_OS_NAME} {_OS_VERSION} {_OS_ARCH}) Python/{_LANGUAGE_VERSION}'
+    'User-Agent': f'incognia-python/{_LIBRARY_VERSION}'
+                  f' ({_OS_NAME} {_OS_VERSION} {_OS_ARCH})'
+                  f' Python/{_LANGUAGE_VERSION}'
 }
 
 JSON_CONTENT_HEADER: Final[dict] = {
@@ -29,13 +31,15 @@ class BaseRequest:
     def timeout(self) -> float:
         return self.__timeout
 
-    def post(self, url: Union[str, bytes], headers: Any = None, data: Any = None, params: Any = None,
+    def post(self, url: Union[str, bytes], headers: Any = None, data: Any = None,
+             params: Any = None,
              auth: Optional[Any] = None) -> Optional[dict]:
         headers = headers or {}
         headers.update(USER_AGENT_HEADER)
 
         try:
-            response = requests.post(url=url, headers=headers, data=data, params=params, timeout=self.__timeout,
+            response = requests.post(url=url, headers=headers, data=data, params=params,
+                                     timeout=self.__timeout,
                                      auth=auth)
             response.raise_for_status()
             return json.loads(response.content.decode('utf-8')) or None
