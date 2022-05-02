@@ -30,6 +30,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -46,7 +47,6 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
           verbose: true
       - name: Publish Python 🐍 distribution 📦 to PyPI
         if: startsWith(github.ref, 'refs/tags')
