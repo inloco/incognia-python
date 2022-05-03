@@ -3,3 +3,5 @@ requires = ['setuptools', 'wheel', 'setuptools_scm[toml]']
 build-backend = 'setuptools.build_meta'
 
 [tool.setuptools_scm]
+version_scheme = 'post-release'
+local_scheme = 'no-local-version'
