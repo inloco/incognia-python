@@ -12,4 +12,5 @@ __all__ = ['api',
            'feedback_events',
            'json_util',
            'models',
-           'token_manager']
+           'token_manager',
+           'base_request']

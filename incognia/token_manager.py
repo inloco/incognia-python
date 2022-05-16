@@ -1,12 +1,13 @@
 import base64
 import datetime as dt
-import json
+from threading import Lock
 from typing import Final, Optional, NamedTuple
 
-import requests
-
+from .base_request import BaseRequest
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError
+
+_TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
 
 
 class TokenValues(NamedTuple):
@@ -15,13 +16,13 @@ class TokenValues(NamedTuple):
 
 
 class TokenManager:
-    TOKEN_REFRESH_BEFORE_SECONDS: Final[int] = 10
-
     def __init__(self, client_id: str, client_secret: str):
         self.__client_id: str = client_id
         self.__client_secret: str = client_secret
         self.__token_values: Optional[TokenValues] = None
         self.__expiration_time: Optional[dt.datetime] = None
+        self.__request: BaseRequest = BaseRequest()
+        self.__mutex: Lock = Lock()
 
     def __refresh_token(self) -> None:
         client_id, client_secret = self.__client_id, self.__client_secret
@@ -30,26 +31,24 @@ class TokenManager:
         headers = {'Authorization': f'Basic {client_id_and_secret_encoded}'}
 
         try:
-            response = requests.post(url=Endpoints.TOKEN, headers=headers,
-                                     auth=(client_id, client_secret))
-            response.raise_for_status()
-
-            parsed_response = json.loads(response.content.decode('utf-8'))
-            token_values = TokenValues(parsed_response['access_token'],
-                                       parsed_response['token_type'])
-            expiration_time = dt.datetime.now() + dt.timedelta(
-                seconds=int(parsed_response['expires_in']))
+            response = self.__request.post(url=Endpoints.TOKEN, headers=headers,
+                                           auth=(client_id, client_secret))
+            token_values = TokenValues(response['access_token'], response['token_type'])
+            expiration_time = dt.datetime.now() + dt.timedelta(seconds=int(response['expires_in']))
 
             self.__token_values, self.__expiration_time = token_values, expiration_time
 
-        except requests.HTTPError as e:
+        except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
     def __is_expired(self) -> bool:
-        return (self.__expiration_time - dt.datetime.now()).total_seconds() <= \
-               self.TOKEN_REFRESH_BEFORE_SECONDS
+        return (self.__expiration_time - dt.datetime.now()) \
+                   .total_seconds() <= _TOKEN_REFRESH_BEFORE_SECONDS
 
     def get(self) -> TokenValues:
+        self.__mutex.acquire()
         if not self.__expiration_time or self.__is_expired():
             self.__refresh_token()
-        return self.__token_values
+        token_values = self.__token_values
+        self.__mutex.release()
+        return token_values
