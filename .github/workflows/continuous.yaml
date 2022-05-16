@@ -54,6 +54,7 @@ jobs:
         with:
           repository_url: https://test.pypi.org/legacy/
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          skip_existing: true
           print_hash: true
           verbose: true
       - name: Publish Python distribution to PyPI
