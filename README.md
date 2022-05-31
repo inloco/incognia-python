@@ -204,7 +204,20 @@ please report them at this repository
 
 ### Development
 
-#### Deployment
+#### Versioning
+
+This project uses [Semantic Versioning](https://semver.org/), where version follows
+`v{MAJOR}.{MINOR}.{PATCH}` format. In summary:
+
+- _Major version update_ - Major functionality changes. Might not have direct backward
+  compatibility.
+  For example, multiple public API parameter changes.
+- _Minor version update_ - Additional features. Major bug fixes. Might have some minor backward
+  compatibility issues. For example, an extra parameter on a callback function.
+- _Patch version update_ - Minor features. Bug fixes. Full backward compatibility. For example,
+  extra fields added to the public structures with version bump.
+
+#### Release
 
 On GitHub, you should merge your changes to the `main` branch, create the git
 [versioning](#Versioning) tag and finally push those changes:
@@ -213,24 +226,22 @@ On GitHub, you should merge your changes to the `main` branch, create the git
 $ git checkout main
 $ git pull
 $ git merge <your_branch>
-$ git tag -a v<version> -m <description> # the versioning tag requires the prefix v
+$ git tag -a v<version> -m "<description>"
+$ git push origin HEAD --tags
+```
+
+- example:
+
+```shell
+$ git checkout main
+$ git pull
+$ git merge feat/some-feature
+$ git tag -a v2.1.0 -m "This release adds some feature..."
 $ git push origin HEAD --tags
 ```
 
 Our CI will build images with the tagged version and publish them
 to [our PyPI repository](https://pypi.org/project/incognia-python/).
-
-#### Versioning
-
-We deploy 3 digit version strings in a form of `{Major}.{Minor}.{Patch}` scheme.
-
-- _Major version update_ - Major functionality changes. Might not have direct backward
-  compatibility.
-  For example, multiple public API parameter changes.
-- _Minor version update_ - Additional features. Major bug fixes. Might have some minor backward
-  compatibility issues. For example, an extra parameter on a callback function.
-- _Patch version update_ - Minor features. Bug fixes. Full backward compatibility. For example, an
-  extra fields added to the public structures with version bump.
 
 ## What is Incognia?
 
