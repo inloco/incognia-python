@@ -68,6 +68,19 @@ coordinates: Coordinates = {
     'lng': -73.98509720487937
 }
 assessment: dict = api.register_new_signup('installation-id', address_coordinates=coordinates)
+
+# with external_id:
+external_id: str = 'external-id'
+assessment: dict = api.register_new_signup('installation-id', external_id=external_id)
+
+# with policy_id:
+policy_id: str = 'policy-id'
+assessment: dict = api.register_new_signup('installation-id', policy_id=policy_id)
+
+# with account_id:
+account_id: str = 'account-id'
+assessment: dict = api.register_new_signup('installation-id', account_id=account_id)
+
 ```
 
 #### Getting a Signup
