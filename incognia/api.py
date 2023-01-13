@@ -23,7 +23,10 @@ class IncogniaAPI:
                             installation_id: str,
                             address_line: Optional[str] = None,
                             structured_address: Optional[StructuredAddress] = None,
-                            address_coordinates: Optional[Coordinates] = None) -> dict:
+                            address_coordinates: Optional[Coordinates] = None,
+                            external_id: Optional[str] = None,
+                            policy_id: Optional[str] = None,
+                            account_id: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
 
@@ -34,7 +37,10 @@ class IncogniaAPI:
                 'installation_id': installation_id,
                 'address_line': address_line,
                 'structured_address': structured_address,
-                'address_coordinates': address_coordinates
+                'address_coordinates': address_coordinates,
+                'external_id': external_id,
+                'policy_id': policy_id,
+                'account_id': account_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
