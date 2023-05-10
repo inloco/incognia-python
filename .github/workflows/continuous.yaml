@@ -1,7 +1,5 @@
 name: Continuous
-
-on: [ push ]
-
+on: push
 jobs:
   test:
     name: Test
@@ -9,9 +7,9 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - '3.8'
-          - '3.9'
-          - '3.10'
+          - "3.8"
+          - "3.9"
+          - "3.10"
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -31,11 +29,12 @@ jobs:
       - name: Test With unittest
         run: |
           python -m unittest --verbose
-
   deploy:
     name: Deploy
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
