@@ -67,7 +67,8 @@ class IncogniaAPI:
                           payment_id: Optional[str] = None,
                           signup_id: Optional[str] = None,
                           account_id: Optional[str] = None,
-                          installation_id: Optional[str] = None) -> None:
+                          installation_id: Optional[str] = None,
+                          session_token: Optional[str] = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
         if not timestamp:
@@ -84,7 +85,8 @@ class IncogniaAPI:
                 'payment_id': payment_id,
                 'signup_id': signup_id,
                 'account_id': account_id,
-                'installation_id': installation_id
+                'installation_id': installation_id,
+                'session_token': session_token
             }
             data = encode(body)
             return self.__request.post(Endpoints.FEEDBACKS, headers=headers, data=data)
