@@ -153,3 +153,30 @@ class IncogniaAPI:
 
         except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
+
+    def register_web_login(self,
+                       session_token: str,
+                       account_id: str,
+                       external_id: Optional[str] = None,
+                       evaluate: Optional[bool] = None) -> dict:
+        if not session_token:
+            raise IncogniaError('session_token is required.')
+        if not account_id:
+            raise IncogniaError('account_id is required.')
+
+        try:
+            headers = self.__get_authorization_header()
+            headers.update(JSON_CONTENT_HEADER)
+            params = None if evaluate is None else {'eval': evaluate}
+            body = {
+                'type': 'login',
+                'session_token': session_token,
+                'account_id': account_id,
+                'external_id': external_id
+            }
+            data = encode(body)
+            return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
+                                       data=data)
+
+        except IncogniaHTTPError as e:
+            raise IncogniaHTTPError(e) from None
