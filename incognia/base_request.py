@@ -42,6 +42,8 @@ class BaseRequest:
                                      timeout=self.__timeout,
                                      auth=auth)
             response.raise_for_status()
+            if len(response.content) == 0:
+                return None
             return json.loads(response.content.decode('utf-8')) or None
 
         except requests.HTTPError as e:
