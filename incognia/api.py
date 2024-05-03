@@ -101,7 +101,8 @@ class IncogniaAPI:
                          addresses: Optional[List[TransactionAddress]] = None,
                          payment_value: Optional[PaymentValue] = None,
                          payment_methods: Optional[List[PaymentMethod]] = None,
-                         evaluate: Optional[bool] = None) -> dict:
+                         evaluate: Optional[bool] = None,
+                         policy_id: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -118,7 +119,8 @@ class IncogniaAPI:
                 'external_id': external_id,
                 'addresses': addresses,
                 'payment_value': payment_value,
-                'payment_methods': payment_methods
+                'payment_methods': payment_methods,
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -131,7 +133,8 @@ class IncogniaAPI:
                        installation_id: str,
                        account_id: str,
                        external_id: Optional[str] = None,
-                       evaluate: Optional[bool] = None) -> dict:
+                       evaluate: Optional[bool] = None,
+                       policy_id: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -145,7 +148,8 @@ class IncogniaAPI:
                 'type': 'login',
                 'installation_id': installation_id,
                 'account_id': account_id,
-                'external_id': external_id
+                'external_id': external_id,
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -158,7 +162,8 @@ class IncogniaAPI:
                            session_token: str,
                            account_id: str,
                            external_id: Optional[str] = None,
-                           evaluate: Optional[bool] = None) -> dict:
+                           evaluate: Optional[bool] = None,
+                           policy_id: Optional[str] = None) -> dict:
         if not session_token:
             raise IncogniaError('session_token is required.')
         if not account_id:
@@ -172,7 +177,8 @@ class IncogniaAPI:
                 'type': 'login',
                 'session_token': session_token,
                 'account_id': account_id,
-                'external_id': external_id
+                'external_id': external_id,
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,

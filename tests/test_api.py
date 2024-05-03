@@ -83,7 +83,8 @@ class TestIncogniaAPI(TestCase):
     REGISTER_VALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
         'installation_id': f'{INSTALLATION_ID}',
-        'account_id': f'{ACCOUNT_ID}'
+        'account_id': f'{ACCOUNT_ID}',
+        'policy_id': f'{POLICY_ID}'
     })
     REGISTER_INVALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
@@ -93,12 +94,14 @@ class TestIncogniaAPI(TestCase):
     REGISTER_VALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
         'installation_id': f'{INSTALLATION_ID}',
-        'account_id': f'{ACCOUNT_ID}'
+        'account_id': f'{ACCOUNT_ID}',
+        'policy_id': f'{POLICY_ID}'
     })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
         'session_token': f'{SESSION_TOKEN}',
-        'account_id': f'{ACCOUNT_ID}'
+        'account_id': f'{ACCOUNT_ID}',
+        'policy_id': f'{POLICY_ID}'
     })
     REGISTER_INVALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -277,7 +280,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_payment(self.INSTALLATION_ID, self.ACCOUNT_ID)
+        request_response = api.register_payment(self.INSTALLATION_ID,
+                                                self.ACCOUNT_ID,
+                                                policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -337,7 +342,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_login(self.INSTALLATION_ID, self.ACCOUNT_ID)
+        request_response = api.register_login(self.INSTALLATION_ID,
+                                              self.ACCOUNT_ID,
+                                              policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -397,7 +404,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_web_login(self.SESSION_TOKEN, self.ACCOUNT_ID)
+        request_response = api.register_web_login(self.SESSION_TOKEN,
+                                                  self.ACCOUNT_ID,
+                                                  policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,

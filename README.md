@@ -175,12 +175,15 @@ payment_methods: List[PaymentMethod] = [
     }
 ]
 
+policy_id: str = 'policy-id'
+
 assessment: dict = api.register_payment('installation-id',
                                         'account-id',
                                         'external-id',
                                         addresses=addresses,
                                         payment_value=payment_value,
-                                        payment_methods=payment_methods)
+                                        payment_methods=payment_methods,
+                                        policy_id=policy_id)
 ```
 
 #### Registering Login
@@ -193,7 +196,12 @@ from incognia.api import IncogniaAPI
 
 api = IncogniaAPI('client-id', 'client-secret')
 
-assessment: dict = api.register_login('installation-id', 'account-id', 'external-id')
+policy_id: str = 'policy-id'
+
+assessment: dict = api.register_login('installation-id', 
+                                      'account-id', 
+                                      'external-id', 
+                                      policy_id='policy_id')
 ```
 
 ## Evidences
