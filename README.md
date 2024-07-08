@@ -83,19 +83,6 @@ assessment: dict = api.register_new_signup('installation-id', account_id=account
 
 ```
 
-#### Getting a Signup
-
-This method allows you to query the latest assessment for a given signup event, returning a `dict`,
-containing the risk assessment and supporting evidence:
-
-```python3
-from incognia.api import IncogniaAPI
-
-api = IncogniaAPI('client-id', 'client-secret')
-
-assessment: dict = api.get_signup_assessment('signup-id')
-```
-
 #### Registering Feedback
 
 This method registers a feedback event for the given identifiers (optional arguments) related to a
@@ -204,11 +191,6 @@ assessment: dict = api.register_login('installation-id',
                                       policy_id='policy_id')
 ```
 
-## Evidences
-
-Every assessment response includes supporting evidence in a dict. You can find all available
-evidences [here](https://docs.incognia.com/apis/understanding-assessment-evidence).
-
 ## Error Handling
 
 Every method call can throw `IncogniaHTTPError` and `IncogniaError`.
@@ -271,13 +253,6 @@ Incognia is a location identity platform for mobile apps that enables:
 - Real-time address verification for onboarding
 - Frictionless authentication
 - Real-time transaction verification
-
-## Create a Free Incognia Account
-
-1. Go to [Incognia](https://www.incognia.com/) and click on "Sign Up For Free"
-2. Create an Account
-3. You're ready to integrate [Incognia SDK](https://docs.incognia.com/sdk/getting-started) and
-   use [Incognia APIs](https://dash.incognia.com/api-reference)
 
 ## License
 

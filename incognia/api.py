@@ -48,17 +48,6 @@ class IncogniaAPI:
         except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
-    def get_signup_assessment(self, signup_id: str) -> dict:
-        if not signup_id:
-            raise IncogniaError('signup_id is required.')
-
-        try:
-            headers = self.__get_authorization_header()
-            return self.__request.get(f'{Endpoints.SIGNUPS}/{signup_id}', headers=headers)
-
-        except IncogniaHTTPError as e:
-            raise IncogniaHTTPError(e) from None
-
     def register_feedback(self,
                           event: str,
                           timestamp: dt.datetime,

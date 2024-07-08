@@ -48,15 +48,3 @@ class BaseRequest:
 
         except requests.HTTPError as e:
             raise IncogniaHTTPError(e) from None
-
-    def get(self, url: Union[str, bytes], headers: Any = None, data: Any = None) -> Optional[dict]:
-        headers = headers or {}
-        headers.update(USER_AGENT_HEADER)
-
-        try:
-            response = requests.get(url=url, headers=headers, data=data, timeout=self.__timeout)
-            response.raise_for_status()
-            return json.loads(response.content.decode('utf-8')) or None
-
-        except requests.HTTPError as e:
-            raise IncogniaHTTPError(e) from None
