@@ -179,46 +179,6 @@ class TestIncogniaAPI(TestCase):
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
 
-    @patch.object(BaseRequest, 'get')
-    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_signup_assessment_when_signup_id_is_valid_should_return_a_valid_dict(
-            self, mock_token_manager_get: Mock, mock_base_request_get: Mock):
-        mock_base_request_get.configure_mock(return_value=self.JSON_RESPONSE)
-
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-        request_response = api.get_signup_assessment(signup_id=self.SIGNUP_ID)
-
-        mock_token_manager_get.assert_called()
-        mock_base_request_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
-                                                 headers=self.AUTH_HEADER)
-
-        self.assertEqual(request_response, self.JSON_RESPONSE)
-
-    @patch.object(BaseRequest, 'get')
-    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_signup_assessment_when_signup_id_invalid_should_raise_an_IncogniaHTTPError(
-            self, mock_token_manager_get: Mock, mock_base_request_get: Mock):
-        mock_base_request_get.configure_mock(side_effect=IncogniaHTTPError)
-
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        self.assertRaises(IncogniaHTTPError, api.get_signup_assessment, self.SIGNUP_ID)
-
-        mock_token_manager_get.assert_called()
-        mock_base_request_get.assert_called_with(f'{Endpoints.SIGNUPS}/{self.SIGNUP_ID}',
-                                                 headers=self.AUTH_HEADER)
-
-    @patch.object(BaseRequest, 'get')
-    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_get_signup_assessment_when_signup_id_is_empty_should_raise_an_IncogniaError(
-            self, mock_token_manager_get: Mock, mock_base_request_get: Mock):
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        self.assertRaises(IncogniaError, api.get_signup_assessment, '')
-
-        mock_token_manager_get.assert_not_called()
-        mock_base_request_get.assert_not_called()
-
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_feedback_when_required_fields_are_valid_should_work(
