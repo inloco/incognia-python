@@ -50,7 +50,7 @@ class IncogniaAPI:
 
     def register_feedback(self,
                           event: str,
-                          timestamp: dt.datetime,
+                          timestamp: dt.datetime = None,
                           external_id: Optional[str] = None,
                           login_id: Optional[str] = None,
                           payment_id: Optional[str] = None,
@@ -60,15 +60,12 @@ class IncogniaAPI:
                           session_token: Optional[str] = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
-        if not timestamp:
-            raise IncogniaError('timestamp is required.')
 
         try:
             headers = self.__get_authorization_header()
             headers.update(JSON_CONTENT_HEADER)
             body = {
                 'event': event,
-                'timestamp': total_milliseconds_since_epoch(timestamp),
                 'external_id': external_id,
                 'login_id': login_id,
                 'payment_id': payment_id,
@@ -77,6 +74,8 @@ class IncogniaAPI:
                 'installation_id': installation_id,
                 'session_token': session_token
             }
+            if timestamp is not None:
+                body['timestamp'] = total_milliseconds_since_epoch(timestamp)
             data = encode(body)
             return self.__request.post(Endpoints.FEEDBACKS, headers=headers, data=data)
 
