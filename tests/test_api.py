@@ -16,6 +16,7 @@ class TestIncogniaAPI(TestCase):
     CLIENT_SECRET: Final[str] = 'ANY_SECRET'
     INSTALLATION_ID: Final[str] = 'ANY_INSTALLATION_ID'
     SESSION_TOKEN: Final[str] = 'ANY_SESSION_TOKEN'
+    REQUEST_TOKEN: Final[str] = 'ANY_REQUEST_TOKEN'
     INVALID_INSTALLATION_ID: Final[str] = 'INVALID_INSTALLATION_ID'
     INVALID_SESSION_TOKEN: Final[str] = 'INVALID_SESSION_TOKEN'
     ACCOUNT_ID: Final[str] = 'ANY_ACCOUNT_ID'
@@ -71,7 +72,8 @@ class TestIncogniaAPI(TestCase):
     CLIENT_ERROR_CODE: Final[int] = 400
     VALID_EVENT_FEEDBACK_TYPE: Final[str] = 'valid_event_feedback_type'
     INVALID_EVENT_FEEDBACK_TYPE: Final[str] = 'invalid_event_feedback_type'
-    TIMESTAMP: Final[dt.datetime] = dt.datetime.now()
+    TIMESTAMP: Final[dt.datetime] = dt.datetime.now(dt.timezone.utc)
+    TIMESTAMP_WITHOUT_TIMEZONE: Final[dt.datetime] = dt.datetime.now()
     LOGIN_ID: Final[str] = 'ANY_LOGIN_ID'
     PAYMENT_ID: Final[str] = 'ANY_PAYMENT_ID'
     REGISTER_VALID_FEEDBACK_DATA: Final[bytes] = encode({
@@ -86,7 +88,11 @@ class TestIncogniaAPI(TestCase):
         'account_id': f'{ACCOUNT_ID}',
         'installation_id': f'{INSTALLATION_ID}',
         'session_token': f'{SESSION_TOKEN}',
-        'timestamp': int((TIMESTAMP - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0)
+        'request_token': f'{REQUEST_TOKEN}',
+        'timestamp': int((
+            TIMESTAMP - dt.datetime.fromtimestamp(0, dt.timezone.utc)).total_seconds() * 1000.0),
+        'occurred_at': TIMESTAMP.isoformat(),
+        'expires_at': TIMESTAMP.isoformat(),
     })
     REGISTER_INVALID_FEEDBACK_DATA: Final[bytes] = encode({
         'event': f'{INVALID_EVENT_FEEDBACK_TYPE}'
@@ -211,13 +217,16 @@ class TestIncogniaAPI(TestCase):
 
         api.register_feedback(self.VALID_EVENT_FEEDBACK_TYPE,
                               timestamp=self.TIMESTAMP,
+                              occurred_at=self.TIMESTAMP,
+                              expires_at=self.TIMESTAMP,
                               external_id=self.EXTERNAL_ID,
                               login_id=self.LOGIN_ID,
                               payment_id=self.PAYMENT_ID,
                               signup_id=self.SIGNUP_ID,
                               account_id=self.ACCOUNT_ID,
                               installation_id=self.INSTALLATION_ID,
-                              session_token=self.SESSION_TOKEN)
+                              session_token=self.SESSION_TOKEN,
+                              request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.FEEDBACKS,
@@ -231,6 +240,48 @@ class TestIncogniaAPI(TestCase):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaError, api.register_feedback, event='')
+
+        mock_token_manager_get.assert_not_called()
+        mock_base_request_post.assert_not_called()
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_feedback_when_timestamp_does_not_have_timezone_should_raise_IncogniaError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError,
+                          api.register_feedback,
+                          event=self.VALID_EVENT_FEEDBACK_TYPE,
+                          timestamp=self.TIMESTAMP_WITHOUT_TIMEZONE)
+
+        mock_token_manager_get.assert_not_called()
+        mock_base_request_post.assert_not_called()
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_feedback_when_occurred_at_does_not_have_timezone_should_raise_IncogniaError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError,
+                          api.register_feedback,
+                          event=self.VALID_EVENT_FEEDBACK_TYPE,
+                          occurred_at=self.TIMESTAMP_WITHOUT_TIMEZONE)
+
+        mock_token_manager_get.assert_not_called()
+        mock_base_request_post.assert_not_called()
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_feedback_when_expires_at_does_not_have_timezone_should_raise_IncogniaError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError,
+                          api.register_feedback,
+                          event=self.VALID_EVENT_FEEDBACK_TYPE,
+                          expires_at=self.TIMESTAMP_WITHOUT_TIMEZONE)
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()

@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import Optional, List
 
-from .datetime_util import total_milliseconds_since_epoch
+from .datetime_util import total_milliseconds_since_epoch, has_timezone
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
@@ -57,9 +57,18 @@ class IncogniaAPI:
                           signup_id: Optional[str] = None,
                           account_id: Optional[str] = None,
                           installation_id: Optional[str] = None,
-                          session_token: Optional[str] = None) -> None:
+                          session_token: Optional[str] = None,
+                          request_token: Optional[str] = None,
+                          occurred_at: dt.datetime = None,
+                          expires_at: dt.datetime = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
+        if timestamp is not None and not has_timezone(timestamp):
+            raise IncogniaError('timestamp must have timezone')
+        if occurred_at is not None and not has_timezone(occurred_at):
+            raise IncogniaError('occurred_at must have timezone')
+        if expires_at is not None and not has_timezone(expires_at):
+            raise IncogniaError('expires_at must have timezone')
 
         try:
             headers = self.__get_authorization_header()
@@ -72,10 +81,15 @@ class IncogniaAPI:
                 'signup_id': signup_id,
                 'account_id': account_id,
                 'installation_id': installation_id,
-                'session_token': session_token
+                'session_token': session_token,
+                'request_token': request_token
             }
             if timestamp is not None:
                 body['timestamp'] = total_milliseconds_since_epoch(timestamp)
+            if occurred_at is not None:
+                body['occurred_at'] = occurred_at.isoformat()
+            if expires_at is not None:
+                body['expires_at'] = expires_at.isoformat()
             data = encode(body)
             return self.__request.post(Endpoints.FEEDBACKS, headers=headers, data=data)
 
