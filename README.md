@@ -95,10 +95,10 @@ from incognia.feedback_events import FeedbackEvents  # feedbacks are strings.
 
 api = IncogniaAPI('client-id', 'client-secret')
 
-api.register_feedback(FeedbackEvents.SIGNUP_ACCEPTED, dt.datetime.now(),
+api.register_feedback(FeedbackEvents.ACCOUNT_TAKEOVER,
+                      occurred_at=dt.datetime(2024, 7, 22, 15, 20, 0, tzinfo=dt.timezone.utc),
                       installation_id='installation-id',
-                      account_id='account-id',
-                      signup_id='signup-id')
+                      account_id='account-id')
 ```
 
 #### Registering Payment
