@@ -1,7 +1,7 @@
 import datetime as dt
 from typing import Optional, List
 
-from .datetime_util import total_milliseconds_since_epoch, has_timezone
+from .datetime_util import has_timezone
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
@@ -51,7 +51,6 @@ class IncogniaAPI(metaclass=Singleton):
 
     def register_feedback(self,
                           event: str,
-                          timestamp: dt.datetime = None,
                           external_id: Optional[str] = None,
                           login_id: Optional[str] = None,
                           payment_id: Optional[str] = None,
@@ -63,8 +62,6 @@ class IncogniaAPI(metaclass=Singleton):
                           expires_at: dt.datetime = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
-        if timestamp is not None and not has_timezone(timestamp):
-            raise IncogniaError('timestamp must have timezone')
         if occurred_at is not None and not has_timezone(occurred_at):
             raise IncogniaError('occurred_at must have timezone')
         if expires_at is not None and not has_timezone(expires_at):
@@ -83,8 +80,6 @@ class IncogniaAPI(metaclass=Singleton):
                 'installation_id': installation_id,
                 'request_token': request_token
             }
-            if timestamp is not None:
-                body['timestamp'] = total_milliseconds_since_epoch(timestamp)
             if occurred_at is not None:
                 body['occurred_at'] = occurred_at.isoformat()
             if expires_at is not None:
