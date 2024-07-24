@@ -71,14 +71,25 @@ class TestIncogniaAPI(TestCase):
     CLIENT_ERROR_CODE: Final[int] = 400
     VALID_EVENT_FEEDBACK_TYPE: Final[str] = 'valid_event_feedback_type'
     INVALID_EVENT_FEEDBACK_TYPE: Final[str] = 'invalid_event_feedback_type'
-    TIMESTAMP: Final[dt.datetime] = dt.datetime.utcfromtimestamp(0)
+    TIMESTAMP: Final[dt.datetime] = dt.datetime.now()
+    LOGIN_ID: Final[str] = 'ANY_LOGIN_ID'
+    PAYMENT_ID: Final[str] = 'ANY_PAYMENT_ID'
     REGISTER_VALID_FEEDBACK_DATA: Final[bytes] = encode({
+        'event': f'{VALID_EVENT_FEEDBACK_TYPE}'
+    })
+    REGISTER_VALID_FEEDBACK_DATA_FULL: Final[bytes] = encode({
         'event': f'{VALID_EVENT_FEEDBACK_TYPE}',
-        'timestamp': 0
+        'external_id': f'{EXTERNAL_ID}',
+        'login_id': f'{LOGIN_ID}',
+        'payment_id': f'{PAYMENT_ID}',
+        'signup_id': f'{SIGNUP_ID}',
+        'account_id': f'{ACCOUNT_ID}',
+        'installation_id': f'{INSTALLATION_ID}',
+        'session_token': f'{SESSION_TOKEN}',
+        'timestamp': int((TIMESTAMP - dt.datetime.utcfromtimestamp(0)).total_seconds() * 1000.0)
     })
     REGISTER_INVALID_FEEDBACK_DATA: Final[bytes] = encode({
-        'event': f'{INVALID_EVENT_FEEDBACK_TYPE}',
-        'timestamp': 0
+        'event': f'{INVALID_EVENT_FEEDBACK_TYPE}'
     })
     REGISTER_VALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
@@ -185,7 +196,7 @@ class TestIncogniaAPI(TestCase):
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        api.register_feedback(self.VALID_EVENT_FEEDBACK_TYPE, self.TIMESTAMP)
+        api.register_feedback(self.VALID_EVENT_FEEDBACK_TYPE)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.FEEDBACKS,
@@ -194,23 +205,32 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_feedback_when_all_fields_are_valid_should_work(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        api.register_feedback(self.VALID_EVENT_FEEDBACK_TYPE,
+                              timestamp=self.TIMESTAMP,
+                              external_id=self.EXTERNAL_ID,
+                              login_id=self.LOGIN_ID,
+                              payment_id=self.PAYMENT_ID,
+                              signup_id=self.SIGNUP_ID,
+                              account_id=self.ACCOUNT_ID,
+                              installation_id=self.INSTALLATION_ID,
+                              session_token=self.SESSION_TOKEN)
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.FEEDBACKS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  data=self.REGISTER_VALID_FEEDBACK_DATA_FULL)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_feedback_when_event_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_feedback, event='', timestamp=self.TIMESTAMP)
-
-        mock_token_manager_get.assert_not_called()
-        mock_base_request_post.assert_not_called()
-
-    @patch.object(BaseRequest, 'post')
-    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_feedback_when_timestamp_is_none_should_raise_an_IncogniaError(
-            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        self.assertRaises(IncogniaError, api.register_feedback,
-                          event=self.VALID_EVENT_FEEDBACK_TYPE, timestamp=None)
+        self.assertRaises(IncogniaError, api.register_feedback, event='')
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -224,8 +244,7 @@ class TestIncogniaAPI(TestCase):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaHTTPError, api.register_feedback,
-                          event=self.INVALID_EVENT_FEEDBACK_TYPE,
-                          timestamp=self.TIMESTAMP)
+                          event=self.INVALID_EVENT_FEEDBACK_TYPE)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.FEEDBACKS,
