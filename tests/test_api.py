@@ -66,7 +66,8 @@ class TestIncogniaAPI(TestCase):
         'address_coordinates': ADDRESS_COORDINATES,
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
-        'account_id': f'{ACCOUNT_ID}'
+        'account_id': f'{ACCOUNT_ID}',
+        'request_token': f'{REQUEST_TOKEN}'
     })
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
@@ -101,7 +102,8 @@ class TestIncogniaAPI(TestCase):
         'type': 'payment',
         'installation_id': f'{INSTALLATION_ID}',
         'account_id': f'{ACCOUNT_ID}',
-        'policy_id': f'{POLICY_ID}'
+        'policy_id': f'{POLICY_ID}',
+        'request_token': f'{REQUEST_TOKEN}',
     })
     REGISTER_INVALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
@@ -112,13 +114,15 @@ class TestIncogniaAPI(TestCase):
         'type': 'login',
         'installation_id': f'{INSTALLATION_ID}',
         'account_id': f'{ACCOUNT_ID}',
-        'policy_id': f'{POLICY_ID}'
+        'policy_id': f'{POLICY_ID}',
+        'request_token': f'{REQUEST_TOKEN}'
     })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
         'session_token': f'{SESSION_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
-        'policy_id': f'{POLICY_ID}'
+        'policy_id': f'{POLICY_ID}',
+        'request_token': f'{REQUEST_TOKEN}'
     })
     REGISTER_INVALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -161,7 +165,8 @@ class TestIncogniaAPI(TestCase):
                                            address_coordinates=self.ADDRESS_COORDINATES,
                                            external_id=self.EXTERNAL_ID,
                                            policy_id=self.POLICY_ID,
-                                           account_id=self.ACCOUNT_ID)
+                                           account_id=self.ACCOUNT_ID,
+                                           request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
@@ -312,7 +317,8 @@ class TestIncogniaAPI(TestCase):
 
         request_response = api.register_payment(self.INSTALLATION_ID,
                                                 self.ACCOUNT_ID,
-                                                policy_id=self.POLICY_ID)
+                                                policy_id=self.POLICY_ID,
+                                                request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -374,7 +380,8 @@ class TestIncogniaAPI(TestCase):
 
         request_response = api.register_login(self.INSTALLATION_ID,
                                               self.ACCOUNT_ID,
-                                              policy_id=self.POLICY_ID)
+                                              policy_id=self.POLICY_ID,
+                                              request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -436,7 +443,8 @@ class TestIncogniaAPI(TestCase):
 
         request_response = api.register_web_login(self.SESSION_TOKEN,
                                                   self.ACCOUNT_ID,
-                                                  policy_id=self.POLICY_ID)
+                                                  policy_id=self.POLICY_ID,
+                                                  request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,

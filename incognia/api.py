@@ -26,7 +26,8 @@ class IncogniaAPI:
                             address_coordinates: Optional[Coordinates] = None,
                             external_id: Optional[str] = None,
                             policy_id: Optional[str] = None,
-                            account_id: Optional[str] = None) -> dict:
+                            account_id: Optional[str] = None,
+                            request_token: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
 
@@ -40,7 +41,8 @@ class IncogniaAPI:
                 'address_coordinates': address_coordinates,
                 'external_id': external_id,
                 'policy_id': policy_id,
-                'account_id': account_id
+                'account_id': account_id,
+                'request_token': request_token
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
@@ -104,7 +106,8 @@ class IncogniaAPI:
                          payment_value: Optional[PaymentValue] = None,
                          payment_methods: Optional[List[PaymentMethod]] = None,
                          evaluate: Optional[bool] = None,
-                         policy_id: Optional[str] = None) -> dict:
+                         policy_id: Optional[str] = None,
+                         request_token: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -122,7 +125,8 @@ class IncogniaAPI:
                 'addresses': addresses,
                 'payment_value': payment_value,
                 'payment_methods': payment_methods,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'request_token': request_token
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -136,7 +140,8 @@ class IncogniaAPI:
                        account_id: str,
                        external_id: Optional[str] = None,
                        evaluate: Optional[bool] = None,
-                       policy_id: Optional[str] = None) -> dict:
+                       policy_id: Optional[str] = None,
+                       request_token: Optional[str] = None) -> dict:
         if not installation_id:
             raise IncogniaError('installation_id is required.')
         if not account_id:
@@ -151,7 +156,8 @@ class IncogniaAPI:
                 'installation_id': installation_id,
                 'account_id': account_id,
                 'external_id': external_id,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'request_token': request_token
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -165,7 +171,8 @@ class IncogniaAPI:
                            account_id: str,
                            external_id: Optional[str] = None,
                            evaluate: Optional[bool] = None,
-                           policy_id: Optional[str] = None) -> dict:
+                           policy_id: Optional[str] = None,
+                           request_token: Optional[str] = None) -> dict:
         if not session_token:
             raise IncogniaError('session_token is required.')
         if not account_id:
@@ -180,7 +187,8 @@ class IncogniaAPI:
                 'session_token': session_token,
                 'account_id': account_id,
                 'external_id': external_id,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'request_token': request_token
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
