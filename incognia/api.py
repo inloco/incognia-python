@@ -20,29 +20,27 @@ class IncogniaAPI:
         return {'Authorization': f'{token_type} {access_token}'}
 
     def register_new_signup(self,
-                            installation_id: str,
+                            request_token: Optional[str],
                             address_line: Optional[str] = None,
                             structured_address: Optional[StructuredAddress] = None,
                             address_coordinates: Optional[Coordinates] = None,
                             external_id: Optional[str] = None,
                             policy_id: Optional[str] = None,
-                            account_id: Optional[str] = None,
-                            request_token: Optional[str] = None) -> dict:
-        if not installation_id:
-            raise IncogniaError('installation_id is required.')
+                            account_id: Optional[str] = None) -> dict:
+        if not request_token:
+            raise IncogniaError('request_token is required.')
 
         try:
             headers = self.__get_authorization_header()
             headers.update(JSON_CONTENT_HEADER)
             body = {
-                'installation_id': installation_id,
+                'request_token': request_token,
                 'address_line': address_line,
                 'structured_address': structured_address,
                 'address_coordinates': address_coordinates,
                 'external_id': external_id,
                 'policy_id': policy_id,
-                'account_id': account_id,
-                'request_token': request_token
+                'account_id': account_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
@@ -59,7 +57,6 @@ class IncogniaAPI:
                           signup_id: Optional[str] = None,
                           account_id: Optional[str] = None,
                           installation_id: Optional[str] = None,
-                          session_token: Optional[str] = None,
                           request_token: Optional[str] = None,
                           occurred_at: dt.datetime = None,
                           expires_at: dt.datetime = None) -> None:
@@ -83,7 +80,6 @@ class IncogniaAPI:
                 'signup_id': signup_id,
                 'account_id': account_id,
                 'installation_id': installation_id,
-                'session_token': session_token,
                 'request_token': request_token
             }
             if timestamp is not None:
@@ -99,17 +95,16 @@ class IncogniaAPI:
             raise IncogniaHTTPError(e) from None
 
     def register_payment(self,
-                         installation_id: str,
+                         request_token: str,
                          account_id: str,
                          external_id: Optional[str] = None,
                          addresses: Optional[List[TransactionAddress]] = None,
                          payment_value: Optional[PaymentValue] = None,
                          payment_methods: Optional[List[PaymentMethod]] = None,
                          evaluate: Optional[bool] = None,
-                         policy_id: Optional[str] = None,
-                         request_token: Optional[str] = None) -> dict:
-        if not installation_id:
-            raise IncogniaError('installation_id is required.')
+                         policy_id: Optional[str] = None) -> dict:
+        if not request_token:
+            raise IncogniaError('request_token is required.')
         if not account_id:
             raise IncogniaError('account_id is required.')
 
@@ -119,14 +114,13 @@ class IncogniaAPI:
             params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'payment',
-                'installation_id': installation_id,
+                'request_token': request_token,
                 'account_id': account_id,
                 'external_id': external_id,
                 'addresses': addresses,
                 'payment_value': payment_value,
                 'payment_methods': payment_methods,
-                'policy_id': policy_id,
-                'request_token': request_token
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -136,14 +130,13 @@ class IncogniaAPI:
             raise IncogniaHTTPError(e) from None
 
     def register_login(self,
-                       installation_id: str,
+                       request_token: str,
                        account_id: str,
                        external_id: Optional[str] = None,
                        evaluate: Optional[bool] = None,
-                       policy_id: Optional[str] = None,
-                       request_token: Optional[str] = None) -> dict:
-        if not installation_id:
-            raise IncogniaError('installation_id is required.')
+                       policy_id: Optional[str] = None) -> dict:
+        if not request_token:
+            raise IncogniaError('request_token is required.')
         if not account_id:
             raise IncogniaError('account_id is required.')
 
@@ -153,11 +146,10 @@ class IncogniaAPI:
             params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'login',
-                'installation_id': installation_id,
+                'request_token': request_token,
                 'account_id': account_id,
                 'external_id': external_id,
-                'policy_id': policy_id,
-                'request_token': request_token
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -167,14 +159,13 @@ class IncogniaAPI:
             raise IncogniaHTTPError(e) from None
 
     def register_web_login(self,
-                           session_token: str,
+                           request_token: str,
                            account_id: str,
                            external_id: Optional[str] = None,
                            evaluate: Optional[bool] = None,
-                           policy_id: Optional[str] = None,
-                           request_token: Optional[str] = None) -> dict:
-        if not session_token:
-            raise IncogniaError('session_token is required.')
+                           policy_id: Optional[str] = None) -> dict:
+        if not request_token:
+            raise IncogniaError('request_token is required.')
         if not account_id:
             raise IncogniaError('account_id is required.')
 
@@ -184,11 +175,10 @@ class IncogniaAPI:
             params = None if evaluate is None else {'eval': evaluate}
             body = {
                 'type': 'login',
-                'session_token': session_token,
+                'request_token': request_token,
                 'account_id': account_id,
                 'external_id': external_id,
-                'policy_id': policy_id,
-                'request_token': request_token
+                'policy_id': policy_id
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
