@@ -136,6 +136,12 @@ class TestIncogniaAPI(TestCase):
     })
     DEFAULT_PARAMS: Final[None] = None
 
+    def test_metaclass_singleton_should_always_return_the_same_instance(self):
+        api1 = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+        api2 = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertEqual(api1, api2)
+
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_new_signup_when_installation_id_is_valid_should_return_a_valid_dict(

@@ -6,11 +6,12 @@ from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
 from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
+from .singleton import Singleton
 from .token_manager import TokenManager
 from .base_request import BaseRequest, JSON_CONTENT_HEADER
 
 
-class IncogniaAPI:
+class IncogniaAPI(metaclass=Singleton):
     def __init__(self, client_id: str, client_secret: str):
         self.__token_manager = TokenManager(client_id, client_secret)
         self.__request = BaseRequest()
