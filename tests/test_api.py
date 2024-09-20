@@ -15,10 +15,8 @@ class TestIncogniaAPI(TestCase):
     CLIENT_ID: Final[str] = 'ANY_ID'
     CLIENT_SECRET: Final[str] = 'ANY_SECRET'
     INSTALLATION_ID: Final[str] = 'ANY_INSTALLATION_ID'
-    SESSION_TOKEN: Final[str] = 'ANY_SESSION_TOKEN'
     REQUEST_TOKEN: Final[str] = 'ANY_REQUEST_TOKEN'
-    INVALID_INSTALLATION_ID: Final[str] = 'INVALID_INSTALLATION_ID'
-    INVALID_SESSION_TOKEN: Final[str] = 'INVALID_SESSION_TOKEN'
+    INVALID_REQUEST_TOKEN: Final[str] = 'INVALID_REQUEST_TOKEN'
     ACCOUNT_ID: Final[str] = 'ANY_ACCOUNT_ID'
     INVALID_ACCOUNT_ID: Final[str] = 'INVALID_ACCOUNT_ID'
     ADDRESS_LINE: Final[str] = 'ANY_ADDRESS_LINE'
@@ -57,17 +55,19 @@ class TestIncogniaAPI(TestCase):
         'Content-Type': 'application/json'
     }
     REGISTER_SIGNUP_DATA: Final[bytes] = encode({
-        'installation_id': f'{INSTALLATION_ID}'
+        'request_token': f'{REQUEST_TOKEN}'
+    })
+    REGISTER_INVALID_SIGNUP_DATA: Final[bytes] = encode({
+        'request_token': f'{INVALID_REQUEST_TOKEN}'
     })
     FULL_REGISTER_SIGNUP_DATA: Final[bytes] = encode({
-        'installation_id': f'{INSTALLATION_ID}',
+        'request_token': f'{REQUEST_TOKEN}',
         'address_line': f'{ADDRESS_LINE}',
         'structured_address': STRUCTURED_ADDRESS,
         'address_coordinates': ADDRESS_COORDINATES,
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
-        'account_id': f'{ACCOUNT_ID}',
-        'request_token': f'{REQUEST_TOKEN}'
+        'account_id': f'{ACCOUNT_ID}'
     })
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
@@ -88,7 +88,6 @@ class TestIncogniaAPI(TestCase):
         'signup_id': f'{SIGNUP_ID}',
         'account_id': f'{ACCOUNT_ID}',
         'installation_id': f'{INSTALLATION_ID}',
-        'session_token': f'{SESSION_TOKEN}',
         'request_token': f'{REQUEST_TOKEN}',
         'timestamp': int((
             TIMESTAMP - dt.datetime.fromtimestamp(0, dt.timezone.utc)).total_seconds() * 1000.0),
@@ -100,50 +99,47 @@ class TestIncogniaAPI(TestCase):
     })
     REGISTER_VALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
-        'installation_id': f'{INSTALLATION_ID}',
+        'request_token': f'{REQUEST_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
         'policy_id': f'{POLICY_ID}',
-        'request_token': f'{REQUEST_TOKEN}',
     })
     REGISTER_INVALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
-        'installation_id': f'{INVALID_INSTALLATION_ID}',
+        'request_token': f'{INVALID_REQUEST_TOKEN}',
         'account_id': f'{INVALID_ACCOUNT_ID}'
     })
     REGISTER_VALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
-        'installation_id': f'{INSTALLATION_ID}',
+        'request_token': f'{REQUEST_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
-        'policy_id': f'{POLICY_ID}',
-        'request_token': f'{REQUEST_TOKEN}'
+        'policy_id': f'{POLICY_ID}'
     })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
-        'session_token': f'{SESSION_TOKEN}',
+        'request_token': f'{REQUEST_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
-        'policy_id': f'{POLICY_ID}',
-        'request_token': f'{REQUEST_TOKEN}'
+        'policy_id': f'{POLICY_ID}'
     })
     REGISTER_INVALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
-        'installation_id': f'{INVALID_INSTALLATION_ID}',
+        'request_token': f'{INVALID_REQUEST_TOKEN}',
         'account_id': f'{INVALID_ACCOUNT_ID}'
     })
     REGISTER_INVALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
-        'session_token': f'{INVALID_SESSION_TOKEN}',
+        'request_token': f'{INVALID_REQUEST_TOKEN}',
         'account_id': f'{INVALID_ACCOUNT_ID}'
     })
     DEFAULT_PARAMS: Final[None] = None
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_new_signup_when_installation_id_is_valid_should_return_a_valid_dict(
+    def test_register_new_signup_when_request_token_is_valid_should_return_a_valid_dict(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-        response = api.register_new_signup(installation_id=self.INSTALLATION_ID)
+        response = api.register_new_signup(request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
@@ -154,13 +150,12 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_new_signup_when_installation_id_is_valid_should_return_full_valid_dict_(
+    def test_register_new_signup_when_request_token_is_valid_should_return_full_valid_dict_(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-        response = api.register_new_signup(installation_id=self.INSTALLATION_ID,
-                                           address_line=self.ADDRESS_LINE,
+        response = api.register_new_signup(address_line=self.ADDRESS_LINE,
                                            structured_address=self.STRUCTURED_ADDRESS,
                                            address_coordinates=self.ADDRESS_COORDINATES,
                                            external_id=self.EXTERNAL_ID,
@@ -177,29 +172,29 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_new_signup_when_installation_id_is_invalid_should_raise_an_IncogniaHTTPError(
+    def test_register_new_signup_when_request_token_is_empty_should_raise_an_IncogniaError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError, api.register_new_signup, request_token='')
+
+        mock_token_manager_get.assert_not_called()
+        mock_base_request_post.assert_not_called()
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_new_signup_when_request_token_is_invalid_should_raise_an_IncogniaHTTPError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         mock_base_request_post.configure_mock(side_effect=IncogniaHTTPError)
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaHTTPError, api.register_new_signup, self.INSTALLATION_ID)
+        self.assertRaises(IncogniaHTTPError, api.register_new_signup, self.INVALID_REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
                                                   headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
-                                                  data=self.REGISTER_SIGNUP_DATA)
-
-    @patch.object(BaseRequest, 'post')
-    @patch.object(TokenManager, 'get')
-    def test_register_new_signup_when_installation_id_is_empty_should_raise_an_IncogniaError(
-            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
-        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        self.assertRaises(IncogniaError, api.register_new_signup, '')
-
-        mock_token_manager_get.assert_not_called()
-        mock_base_request_post.assert_not_called()
+                                                  data=self.REGISTER_INVALID_SIGNUP_DATA)
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
@@ -230,7 +225,6 @@ class TestIncogniaAPI(TestCase):
                               signup_id=self.SIGNUP_ID,
                               account_id=self.ACCOUNT_ID,
                               installation_id=self.INSTALLATION_ID,
-                              session_token=self.SESSION_TOKEN,
                               request_token=self.REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
@@ -315,10 +309,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_payment(self.INSTALLATION_ID,
+        request_response = api.register_payment(self.REQUEST_TOKEN,
                                                 self.ACCOUNT_ID,
-                                                policy_id=self.POLICY_ID,
-                                                request_token=self.REQUEST_TOKEN)
+                                                policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -330,11 +323,12 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_payment_when_installation_id_is_empty_should_raise_an_IncogniaError(
+    def test_register_payment_when_request_token_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_payment, installation_id='',
+        self.assertRaises(IncogniaError, api.register_payment,
+                          request_token='',
                           account_id=self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_not_called()
@@ -346,7 +340,8 @@ class TestIncogniaAPI(TestCase):
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_payment, installation_id=self.INSTALLATION_ID,
+        self.assertRaises(IncogniaError, api.register_payment,
+                          request_token=self.REQUEST_TOKEN,
                           account_id='')
 
         mock_token_manager_get.assert_not_called()
@@ -361,7 +356,7 @@ class TestIncogniaAPI(TestCase):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaHTTPError, api.register_payment,
-                          installation_id=self.INVALID_INSTALLATION_ID,
+                          request_token=self.INVALID_REQUEST_TOKEN,
                           account_id=self.INVALID_ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
@@ -378,10 +373,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_login(self.INSTALLATION_ID,
+        request_response = api.register_login(self.REQUEST_TOKEN,
                                               self.ACCOUNT_ID,
-                                              policy_id=self.POLICY_ID,
-                                              request_token=self.REQUEST_TOKEN)
+                                              policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -393,11 +387,12 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_login_when_installation_id_is_empty_should_raise_an_IncogniaError(
+    def test_register_login_when_request_token_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_login, installation_id='',
+        self.assertRaises(IncogniaError, api.register_login,
+                          request_token='',
                           account_id=self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_not_called()
@@ -409,7 +404,8 @@ class TestIncogniaAPI(TestCase):
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_login, installation_id=self.INSTALLATION_ID,
+        self.assertRaises(IncogniaError, api.register_login,
+                          request_token=self.REQUEST_TOKEN,
                           account_id='')
 
         mock_token_manager_get.assert_not_called()
@@ -424,7 +420,7 @@ class TestIncogniaAPI(TestCase):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaHTTPError, api.register_login,
-                          installation_id=self.INVALID_INSTALLATION_ID,
+                          request_token=self.INVALID_REQUEST_TOKEN,
                           account_id=self.INVALID_ACCOUNT_ID)
 
         mock_token_manager_get.assert_called()
@@ -441,10 +437,9 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_web_login(self.SESSION_TOKEN,
+        request_response = api.register_web_login(self.REQUEST_TOKEN,
                                                   self.ACCOUNT_ID,
-                                                  policy_id=self.POLICY_ID,
-                                                  request_token=self.REQUEST_TOKEN)
+                                                  policy_id=self.POLICY_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
@@ -456,11 +451,12 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
-    def test_register_web_login_when_session_token_is_empty_should_raise_an_IncogniaError(
+    def test_register_web_login_when_request_token_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_web_login, session_token='',
+        self.assertRaises(IncogniaError, api.register_web_login,
+                          request_token='',
                           account_id=self.ACCOUNT_ID)
 
         mock_token_manager_get.assert_not_called()
@@ -472,7 +468,8 @@ class TestIncogniaAPI(TestCase):
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_web_login, session_token=self.SESSION_TOKEN,
+        self.assertRaises(IncogniaError, api.register_web_login,
+                          request_token=self.REQUEST_TOKEN,
                           account_id='')
 
         mock_token_manager_get.assert_not_called()
@@ -487,8 +484,8 @@ class TestIncogniaAPI(TestCase):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaHTTPError, api.register_web_login,
-                          session_token=self.INVALID_SESSION_TOKEN,
-                          account_id=self.INVALID_ACCOUNT_ID)
+                          account_id=self.INVALID_ACCOUNT_ID,
+                          request_token=self.INVALID_REQUEST_TOKEN)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,

@@ -33,7 +33,7 @@ Authentication is done transparently, so you don't need to worry about it.
 
 #### Registering New Signup
 
-This method registers a new signup for the given installation and a structured address, an address
+This method registers a new signup for the given request token and a structured address, an address
 line or coordinates, returning a `dict`, containing the risk assessment and supporting evidence:
 
 ```python3
@@ -56,30 +56,30 @@ structured_address: StructuredAddress = {
     'complements': 'Floor 2',
     'postal_code': '10001'
 }
-assessment: dict = api.register_new_signup('installation-id', structured_address=structured_address)
+assessment: dict = api.register_new_signup('request-token', structured_address=structured_address)
 
 # with address line:
 address_line: str = '350 Fifth Avenue, Manhattan, New York 10118'
-assessment: dict = api.register_new_signup('installation-id', address_line=address_line)
+assessment: dict = api.register_new_signup('request-token', address_line=address_line)
 
 # with coordinates, a dict:
 coordinates: Coordinates = {
     'lat': 40.74836007062138,
     'lng': -73.98509720487937
 }
-assessment: dict = api.register_new_signup('installation-id', address_coordinates=coordinates)
+assessment: dict = api.register_new_signup('request-token', address_coordinates=coordinates)
 
 # with external_id:
 external_id: str = 'external-id'
-assessment: dict = api.register_new_signup('installation-id', external_id=external_id)
+assessment: dict = api.register_new_signup('request-token', external_id=external_id)
 
 # with policy_id:
 policy_id: str = 'policy-id'
-assessment: dict = api.register_new_signup('installation-id', policy_id=policy_id)
+assessment: dict = api.register_new_signup('request-token', policy_id=policy_id)
 
 # with account_id:
 account_id: str = 'account-id'
-assessment: dict = api.register_new_signup('installation-id', account_id=account_id)
+assessment: dict = api.register_new_signup('request-token', account_id=account_id)
 
 ```
 
@@ -97,13 +97,13 @@ api = IncogniaAPI('client-id', 'client-secret')
 
 api.register_feedback(FeedbackEvents.ACCOUNT_TAKEOVER,
                       occurred_at=dt.datetime(2024, 7, 22, 15, 20, 0, tzinfo=dt.timezone.utc),
-                      installation_id='installation-id',
+                      request_token='request-token',
                       account_id='account-id')
 ```
 
 #### Registering Payment
 
-This method registers a new payment for the given installation and account, returning a `dict`,
+This method registers a new payment for the given request token and account, returning a `dict`,
 containing the risk assessment and supporting evidence.
 
 ```python3
@@ -164,7 +164,7 @@ payment_methods: List[PaymentMethod] = [
 
 policy_id: str = 'policy-id'
 
-assessment: dict = api.register_payment('installation-id',
+assessment: dict = api.register_payment('request-token',
                                         'account-id',
                                         'external-id',
                                         addresses=addresses,
@@ -175,7 +175,7 @@ assessment: dict = api.register_payment('installation-id',
 
 #### Registering Login
 
-This method registers a new login for the given installation and account, returning a `dict`,
+This method registers a new login for the given request token and account, returning a `dict`,
 containing the risk assessment and supporting evidence.
 
 ```python3
@@ -185,7 +185,7 @@ api = IncogniaAPI('client-id', 'client-secret')
 
 policy_id: str = 'policy-id'
 
-assessment: dict = api.register_login('installation-id', 
+assessment: dict = api.register_login('request-token', 
                                       'account-id', 
                                       'external-id', 
                                       policy_id='policy_id')
