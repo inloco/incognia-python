@@ -1,11 +1,11 @@
 import datetime as dt
 from typing import Optional, List
 
-from .datetime_util import has_timezone
+from .datetime_util import has_timezone, datetime_valid
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
-from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod
+from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod, Location
 from .singleton import Singleton
 from .token_manager import TokenManager
 from .base_request import BaseRequest, JSON_CONTENT_HEADER
@@ -94,6 +94,7 @@ class IncogniaAPI(metaclass=Singleton):
                          request_token: str,
                          account_id: str,
                          external_id: Optional[str] = None,
+                         location: Optional[Location] = None,
                          addresses: Optional[List[TransactionAddress]] = None,
                          payment_value: Optional[PaymentValue] = None,
                          payment_methods: Optional[List[PaymentMethod]] = None,
@@ -103,6 +104,14 @@ class IncogniaAPI(metaclass=Singleton):
             raise IncogniaError('request_token is required.')
         if not account_id:
             raise IncogniaError('account_id is required.')
+        if location is not None:
+            if location['latitude'] is None:
+                raise IncogniaError('location argument requires "latitude" field')
+            if location['longitude'] is None:
+                raise IncogniaError('location argument requires "longitude" field')
+            if location['collected_at'] is not None and not datetime_valid(location['collected_at']):
+                raise IncogniaError('location["collected_at"] must conform to ISO-8601 format')
+
 
         try:
             headers = self.__get_authorization_header()
@@ -113,6 +122,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'request_token': request_token,
                 'account_id': account_id,
                 'external_id': external_id,
+                'location': location,
                 'addresses': addresses,
                 'payment_value': payment_value,
                 'payment_methods': payment_methods,
@@ -128,13 +138,21 @@ class IncogniaAPI(metaclass=Singleton):
     def register_login(self,
                        request_token: str,
                        account_id: str,
+                       location: Optional[Location] = None,
                        external_id: Optional[str] = None,
-                       evaluate: Optional[bool] = None,
+                       evaluate: Optional[bool] = None, # true?
                        policy_id: Optional[str] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
             raise IncogniaError('account_id is required.')
+        if location is not None:
+            if location['latitude'] is None:
+                raise IncogniaError('location argument requires "latitude" field')
+            if location['longitude'] is None:
+                raise IncogniaError('location argument requires "longitude" field')
+            if location['collected_at'] is not None and not datetime_valid(location['collected_at']):
+                raise IncogniaError('location["collected_at"] must conform to ISO-8601 format')
 
         try:
             headers = self.__get_authorization_header()
@@ -144,6 +162,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'type': 'login',
                 'request_token': request_token,
                 'account_id': account_id,
+                'location' : location,
                 'external_id': external_id,
                 'policy_id': policy_id
             }
