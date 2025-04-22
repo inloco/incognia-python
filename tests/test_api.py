@@ -506,8 +506,6 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        #print(inspect.signature(IncogniaAPI.register_login))
-
         request_response = api.register_login(self.REQUEST_TOKEN,
                                               self.ACCOUNT_ID,
                                               location=self.LOCATION,
