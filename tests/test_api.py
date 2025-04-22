@@ -496,9 +496,6 @@ class TestIncogniaAPI(TestCase):
                                                   params=self.DEFAULT_PARAMS,
                                                   data=self.REGISTER_INVALID_WEB_LOGIN_DATA)
 
-
-# faltando lat, faltando loc, iso não respeitada
-# tanto em login quanto payment
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_login_with_valid_location_should_work(
