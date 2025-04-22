@@ -140,7 +140,7 @@ class IncogniaAPI(metaclass=Singleton):
                        account_id: str,
                        location: Optional[Location] = None,
                        external_id: Optional[str] = None,
-                       evaluate: Optional[bool] = None, # true?
+                       evaluate: Optional[bool] = None,
                        policy_id: Optional[str] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
