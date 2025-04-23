@@ -496,20 +496,14 @@ class TestIncogniaAPI(TestCase):
                                                   params=self.DEFAULT_PARAMS,
                                                   data=self.REGISTER_INVALID_WEB_LOGIN_DATA)
 
-
-# faltando lat, faltando loc, iso não respeitada
-# tanto em login quanto payment
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_login_with_valid_location_should_work(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
 
         mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
-        #mock_base_request_post.return_value = self.JSON_RESPONSE
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
-
-        #print(inspect.signature(IncogniaAPI.register_login))
 
         request_response = api.register_login(self.REQUEST_TOKEN,
                                               self.ACCOUNT_ID,
