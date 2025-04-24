@@ -1,5 +1,6 @@
 from typing import TypedDict, Literal
 
+
 class Coordinates(TypedDict):
     lat: float
     lng: float
@@ -41,6 +42,7 @@ class PaymentMethod(TypedDict, total=False):
     type: Literal['credit', 'debit']
     credit_card_info: CardInfo
     debit_card_info: CardInfo
+
 
 class Location(TypedDict, total=False):
     latitude: float

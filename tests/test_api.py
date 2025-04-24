@@ -502,7 +502,6 @@ class TestIncogniaAPI(TestCase):
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
 
         mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
-        #mock_base_request_post.return_value = self.JSON_RESPONSE
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
@@ -528,11 +527,13 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_login,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_EMPTY_LATITUDE,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError, api.register_login,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_EMPTY_LATITUDE,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -546,15 +547,18 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_login,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError,
+            api.register_login,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
-    
+
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_login_with_location_and_wrong_timestamp_should_raise_an_IncogniaError(
@@ -564,15 +568,17 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_login,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError,
+            api.register_login,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
-
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
@@ -583,16 +589,20 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        request_response = api.register_payment(self.REQUEST_TOKEN,
-                                              self.ACCOUNT_ID,
-                                              location=self.LOCATION,
-                                              policy_id=self.POLICY_ID)
+        request_response = api.register_payment(
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.LOCATION,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_called()
-        mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
-                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
-                                                  params=self.DEFAULT_PARAMS,
-                                                  data=self.REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION)
+        mock_base_request_post.assert_called_with(
+            Endpoints.TRANSACTIONS,
+            headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+            params=self.DEFAULT_PARAMS,
+            data=self.REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION,
+            )
 
         self.assertEqual(request_response, self.JSON_RESPONSE)
 
@@ -605,11 +615,13 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_payment,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_EMPTY_LATITUDE,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError, api.register_payment,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_EMPTY_LATITUDE,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -623,15 +635,17 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_payment,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError, api.register_payment,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
-    
+
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_payment_with_location_and_wrong_timestamp_should_raise_an_IncogniaError(
@@ -641,11 +655,14 @@ class TestIncogniaAPI(TestCase):
 
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
-        self.assertRaises(IncogniaError, api.register_payment,
-                        self.REQUEST_TOKEN,
-                        self.ACCOUNT_ID,
-                        location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
-                        policy_id=self.POLICY_ID)
+        self.assertRaises(
+            IncogniaError,
+            api.register_payment,
+            self.REQUEST_TOKEN,
+            self.ACCOUNT_ID,
+            location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
+            policy_id=self.POLICY_ID,
+            )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()

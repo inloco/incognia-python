@@ -5,7 +5,14 @@ from .datetime_util import has_timezone, datetime_valid
 from .endpoints import Endpoints
 from .exceptions import IncogniaHTTPError, IncogniaError
 from .json_util import encode
-from .models import Coordinates, StructuredAddress, TransactionAddress, PaymentValue, PaymentMethod, Location
+from .models import (
+    Coordinates,
+    StructuredAddress,
+    TransactionAddress,
+    PaymentValue,
+    PaymentMethod,
+    Location,
+)
 from .singleton import Singleton
 from .token_manager import TokenManager
 from .base_request import BaseRequest, JSON_CONTENT_HEADER
@@ -109,9 +116,11 @@ class IncogniaAPI(metaclass=Singleton):
                 raise IncogniaError('location argument requires "latitude" field')
             if location['longitude'] is None:
                 raise IncogniaError('location argument requires "longitude" field')
-            if location['collected_at'] is not None and not datetime_valid(location['collected_at']):
+            if (
+                location['collected_at'] is not None
+                and not datetime_valid(location['collected_at'])
+            ):
                 raise IncogniaError('location["collected_at"] must conform to ISO-8601 format')
-
 
         try:
             headers = self.__get_authorization_header()
@@ -151,7 +160,10 @@ class IncogniaAPI(metaclass=Singleton):
                 raise IncogniaError('location argument requires "latitude" field')
             if location['longitude'] is None:
                 raise IncogniaError('location argument requires "longitude" field')
-            if location['collected_at'] is not None and not datetime_valid(location['collected_at']):
+            if (
+                location['collected_at'] is not None
+                and not datetime_valid(location['collected_at'])
+            ):
                 raise IncogniaError('location["collected_at"] must conform to ISO-8601 format')
 
         try:
@@ -162,7 +174,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'type': 'login',
                 'request_token': request_token,
                 'account_id': account_id,
-                'location' : location,
+                'location': location,
                 'external_id': external_id,
                 'policy_id': policy_id
             }
