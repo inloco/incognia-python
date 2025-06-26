@@ -70,7 +70,7 @@ class TestIncogniaAPI(TestCase):
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
         'account_id': f'{ACCOUNT_ID}',
-        'device_os': f'{DEVICE_OS}',
+        'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}'
     })
     OK_STATUS_CODE: Final[int] = 200

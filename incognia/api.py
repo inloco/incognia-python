@@ -51,7 +51,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'external_id': external_id,
                 'policy_id': policy_id,
                 'account_id': account_id,
-                'device_os': device_os,
+                'device_os': device_os.lower() if device_os is not None else None,
                 'app_version': app_version
             }
             data = encode(body)
