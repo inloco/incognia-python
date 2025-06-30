@@ -34,7 +34,9 @@ class IncogniaAPI(metaclass=Singleton):
                             address_coordinates: Optional[Coordinates] = None,
                             external_id: Optional[str] = None,
                             policy_id: Optional[str] = None,
-                            account_id: Optional[str] = None) -> dict:
+                            account_id: Optional[str] = None,
+                            device_os: Optional[str] = None,
+                            app_version: Optional[str] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
 
@@ -48,7 +50,9 @@ class IncogniaAPI(metaclass=Singleton):
                 'address_coordinates': address_coordinates,
                 'external_id': external_id,
                 'policy_id': policy_id,
-                'account_id': account_id
+                'account_id': account_id,
+                'device_os': device_os.lower() if device_os is not None else None,
+                'app_version': app_version
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)

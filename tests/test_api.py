@@ -20,6 +20,8 @@ class TestIncogniaAPI(TestCase):
     ACCOUNT_ID: Final[str] = 'ANY_ACCOUNT_ID'
     INVALID_ACCOUNT_ID: Final[str] = 'INVALID_ACCOUNT_ID'
     ADDRESS_LINE: Final[str] = 'ANY_ADDRESS_LINE'
+    DEVICE_OS: Final[str] = 'ANY_DEVICE_OS'
+    APP_VERSION: Final[str] = 'ANY_APP_VERSION'
     STRUCTURED_ADDRESS: Final[dict] = {
         'locale': 'ANY_LOCALE',
         'country_name': 'ANY_COUNTRY_NAME',
@@ -67,7 +69,9 @@ class TestIncogniaAPI(TestCase):
         'address_coordinates': ADDRESS_COORDINATES,
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
-        'account_id': f'{ACCOUNT_ID}'
+        'account_id': f'{ACCOUNT_ID}',
+        'device_os': f'{DEVICE_OS.lower()}',
+        'app_version': f'{APP_VERSION}'
     })
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
@@ -195,7 +199,9 @@ class TestIncogniaAPI(TestCase):
                                            external_id=self.EXTERNAL_ID,
                                            policy_id=self.POLICY_ID,
                                            account_id=self.ACCOUNT_ID,
-                                           request_token=self.REQUEST_TOKEN)
+                                           request_token=self.REQUEST_TOKEN,
+                                           device_os=self.DEVICE_OS,
+                                           app_version=self.APP_VERSION)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
@@ -533,7 +539,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_EMPTY_LATITUDE,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -554,7 +560,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -575,7 +581,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -594,7 +600,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.LOCATION,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(
@@ -602,7 +608,7 @@ class TestIncogniaAPI(TestCase):
             headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
             params=self.DEFAULT_PARAMS,
             data=self.REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION,
-            )
+        )
 
         self.assertEqual(request_response, self.JSON_RESPONSE)
 
@@ -621,7 +627,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_EMPTY_LATITUDE,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -641,7 +647,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_EMPTY_LONGITUDE,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -662,7 +668,7 @@ class TestIncogniaAPI(TestCase):
             self.ACCOUNT_ID,
             location=self.INVALID_LOCATION_WRONG_TIMESTAMP,
             policy_id=self.POLICY_ID,
-            )
+        )
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
