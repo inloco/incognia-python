@@ -39,7 +39,9 @@ class CardInfo(TypedDict, total=False):
 
 
 class PaymentMethod(TypedDict, total=False):
-    type: Literal['credit', 'debit']
+    type: Literal['account_balance', 'apple_pay', 'bancolombia',
+                  'boleto_bancario', 'cash', 'credit', 'debit',
+                  'google_pay', 'meal_voucher', 'nu_pay', 'paypal', 'pix']
     credit_card_info: CardInfo
     debit_card_info: CardInfo
 
