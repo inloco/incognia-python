@@ -73,6 +73,22 @@ class TestIncogniaAPI(TestCase):
         'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}'
     })
+    CUSTOM_PROPERTIES: Final[dict] = {
+        'float_field': 6.092,
+        'string_field': "the next generation of identity",
+    }
+    REGISTER_WEB_SIGNUP_DATA: Final[bytes] = encode({
+        'request_token': f'{REQUEST_TOKEN}'
+    })
+    REGISTER_INVALID_WEB_SIGNUP_DATA: Final[bytes] = encode({
+        'request_token': f'{INVALID_REQUEST_TOKEN}'
+    })
+    FULL_REGISTER_WEB_SIGNUP_DATA: Final[bytes] = encode({
+        'request_token': f'{REQUEST_TOKEN}',
+        'policy_id': f'{POLICY_ID}',
+        'account_id': f'{ACCOUNT_ID}',
+        'custom_properties': CUSTOM_PROPERTIES
+    })
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
     VALID_EVENT_FEEDBACK_TYPE: Final[str] = 'valid_event_feedback_type'
@@ -188,6 +204,22 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_new_web_signup_when_request_token_is_valid_should_return_a_valid_dict(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+        response = api.register_new_web_signup(request_token=self.REQUEST_TOKEN)
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  data=self.REGISTER_WEB_SIGNUP_DATA)
+
+        self.assertEqual(response, self.JSON_RESPONSE)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_new_signup_when_request_token_is_valid_should_return_full_valid_dict_(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
@@ -212,11 +244,41 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_new_web_signup_when_request_token_is_valid_should_return_full_valid_dict_(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+        response = api.register_new_web_signup(request_token=self.REQUEST_TOKEN,
+                                               policy_id=self.POLICY_ID,
+                                               account_id=self.ACCOUNT_ID,
+                                               custom_properties=self.CUSTOM_PROPERTIES)
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  data=self.FULL_REGISTER_WEB_SIGNUP_DATA)
+
+        self.assertEqual(response, self.JSON_RESPONSE)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_new_signup_when_request_token_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
 
         self.assertRaises(IncogniaError, api.register_new_signup, request_token='')
+
+        mock_token_manager_get.assert_not_called()
+        mock_base_request_post.assert_not_called()
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_new_web_signup_when_request_token_is_empty_should_raise_an_IncogniaError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaError, api.register_new_web_signup, request_token='')
 
         mock_token_manager_get.assert_not_called()
         mock_base_request_post.assert_not_called()
@@ -235,6 +297,22 @@ class TestIncogniaAPI(TestCase):
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
                                                   headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                                   data=self.REGISTER_INVALID_SIGNUP_DATA)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_new_web_signup_if_request_token_is_invalid_should_raise_an_IncogniaHTTPError(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        mock_base_request_post.configure_mock(side_effect=IncogniaHTTPError)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        self.assertRaises(IncogniaHTTPError, api.register_new_web_signup,
+                          self.INVALID_REQUEST_TOKEN)
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  data=self.REGISTER_INVALID_WEB_SIGNUP_DATA)
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)

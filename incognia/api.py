@@ -60,6 +60,30 @@ class IncogniaAPI(metaclass=Singleton):
         except IncogniaHTTPError as e:
             raise IncogniaHTTPError(e) from None
 
+    def register_new_web_signup(self,
+                                request_token: Optional[str],
+                                policy_id: Optional[str] = None,
+                                account_id: Optional[str] = None,
+                                custom_properties: Optional[dict] = None,
+                                ) -> dict:
+        if not request_token:
+            raise IncogniaError('request_token is required.')
+
+        try:
+            headers = self.__get_authorization_header()
+            headers.update(JSON_CONTENT_HEADER)
+            body = {
+                'request_token': request_token,
+                'policy_id': policy_id,
+                'account_id': account_id,
+                'custom_properties': custom_properties
+            }
+            data = encode(body)
+            return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
+
+        except IncogniaHTTPError as e:
+            raise IncogniaHTTPError(e) from None
+
     def register_feedback(self,
                           event: str,
                           external_id: Optional[str] = None,
