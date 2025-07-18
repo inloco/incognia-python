@@ -20,6 +20,14 @@ class StructuredAddress(TypedDict, total=False):
     postal_code: str
 
 
+class Coupon (TypedDict, total=False):
+    type: Literal['percent_off', 'fixed_value']
+    value: float
+    max_discount: float
+    id: str
+    name: str
+
+
 class TransactionAddress(TypedDict, total=False):
     type: Literal['shipping', 'billing', 'home']
     structured_address: StructuredAddress

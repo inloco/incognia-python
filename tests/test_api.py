@@ -96,6 +96,33 @@ class TestIncogniaAPI(TestCase):
     TIMESTAMP_WITHOUT_TIMEZONE: Final[dt.datetime] = dt.datetime.now()
     LOGIN_ID: Final[str] = 'ANY_LOGIN_ID'
     PAYMENT_ID: Final[str] = 'ANY_PAYMENT_ID'
+    STORE_ID: Final[str] = 'ANY_STORE_ID'
+    COUPON: Final[dict] = {
+        "type": "percent_off",
+        "value": 2.5,
+        "max_discount": 50.0,
+        "id": "COUPON_ID",
+        "name": "COUPON_NAME"
+    }
+    TRANSACTION_ADDRESS: Final[dict] = {
+        "type": "billing",
+        "structured_address": STRUCTURED_ADDRESS,
+        "address_coordinates": ADDRESS_COORDINATES
+    }
+    PAYMENT_VALUE: Final[dict] = {
+        'value': 12.34,
+        'currency': 'BRL'
+    }
+    CARD_INFO: Final[dict] = {
+        'bin': '0000000000',
+        'last_four_digits': '0000',
+        'expiry_year': '2029',
+        'expiry_month': '04'
+    }
+    PAYMENT_METHOD: Final[dict] = {
+        'type': 'credit_card',
+        'credit_card_info': CARD_INFO
+    }
     LOCATION: Final[dict] = {
         'latitude': 0.000,
         'longitude': 89.000,
@@ -136,6 +163,22 @@ class TestIncogniaAPI(TestCase):
         'request_token': f'{REQUEST_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
         'policy_id': f'{POLICY_ID}',
+    })
+    REGISTER_VALID_PAYMENT_DATA_ALL_FIELDS: Final[bytes] = encode({
+        'type': 'payment',
+        'request_token': f'{REQUEST_TOKEN}',
+        'account_id': f'{ACCOUNT_ID}',
+        'external_id': f'{EXTERNAL_ID}',
+        'location': LOCATION,
+        'addresses': [TRANSACTION_ADDRESS],
+        'payment_value': PAYMENT_VALUE,
+        'payment_methods': PAYMENT_METHOD,
+        'policy_id': f'{POLICY_ID}',
+        'custom_properties': CUSTOM_PROPERTIES,
+        'coupon': COUPON,
+        'device_os': f'{DEVICE_OS.lower()}',
+        'app_version': f'{APP_VERSION}',
+        'store_id': f'{STORE_ID}'
     })
     REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION: Final[bytes] = encode({
         'type': 'payment',
@@ -405,6 +448,38 @@ class TestIncogniaAPI(TestCase):
                                                   headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                                   params=self.DEFAULT_PARAMS,
                                                   data=self.REGISTER_VALID_PAYMENT_DATA)
+
+        self.assertEqual(request_response, self.JSON_RESPONSE)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_payment_with_all_fields_should_work(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        request_response = api.register_payment(
+            request_token=self.REQUEST_TOKEN,
+            account_id=self.ACCOUNT_ID,
+            external_id=self.EXTERNAL_ID,
+            location=self.LOCATION,
+            addresses=[self.TRANSACTION_ADDRESS],
+            payment_value=self.PAYMENT_VALUE,
+            payment_methods=self.PAYMENT_METHOD,
+            policy_id=self.POLICY_ID,
+            custom_properties=self.CUSTOM_PROPERTIES,
+            coupon=self.COUPON,
+            device_os=self.DEVICE_OS,
+            app_version=self.APP_VERSION,
+            store_id=self.STORE_ID
+        )
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  params=self.DEFAULT_PARAMS,
+                                                  data=self.REGISTER_VALID_PAYMENT_DATA_ALL_FIELDS)
 
         self.assertEqual(request_response, self.JSON_RESPONSE)
 

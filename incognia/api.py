@@ -12,6 +12,7 @@ from .models import (
     PaymentValue,
     PaymentMethod,
     Location,
+    Coupon,
 )
 from .singleton import Singleton
 from .token_manager import TokenManager
@@ -134,7 +135,12 @@ class IncogniaAPI(metaclass=Singleton):
                          payment_value: Optional[PaymentValue] = None,
                          payment_methods: Optional[List[PaymentMethod]] = None,
                          evaluate: Optional[bool] = None,
-                         policy_id: Optional[str] = None) -> dict:
+                         policy_id: Optional[str] = None,
+                         custom_properties: Optional[dict] = None,
+                         coupon: Optional[Coupon] = None,
+                         device_os: Optional[str] = None,
+                         app_version: Optional[str] = None,
+                         store_id: Optional[str] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -163,7 +169,12 @@ class IncogniaAPI(metaclass=Singleton):
                 'addresses': addresses,
                 'payment_value': payment_value,
                 'payment_methods': payment_methods,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'custom_properties': custom_properties,
+                'coupon': coupon,
+                'device_os': device_os.lower() if device_os is not None else None,
+                'app_version': app_version,
+                'store_id': store_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
