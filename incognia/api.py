@@ -189,7 +189,9 @@ class IncogniaAPI(metaclass=Singleton):
                        location: Optional[Location] = None,
                        external_id: Optional[str] = None,
                        evaluate: Optional[bool] = None,
-                       policy_id: Optional[str] = None) -> dict:
+                       policy_id: Optional[str] = None,
+                       device_os: Optional[str] = None,
+                       app_version: Optional[str] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -215,7 +217,9 @@ class IncogniaAPI(metaclass=Singleton):
                 'account_id': account_id,
                 'location': location,
                 'external_id': external_id,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'device_os': device_os.lower() if device_os is not None else None,
+                'app_version': app_version,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -229,7 +233,8 @@ class IncogniaAPI(metaclass=Singleton):
                            account_id: str,
                            external_id: Optional[str] = None,
                            evaluate: Optional[bool] = None,
-                           policy_id: Optional[str] = None) -> dict:
+                           policy_id: Optional[str] = None,
+                           custom_properties: Optional[dict] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -244,7 +249,8 @@ class IncogniaAPI(metaclass=Singleton):
                 'request_token': request_token,
                 'account_id': account_id,
                 'external_id': external_id,
-                'policy_id': policy_id
+                'policy_id': policy_id,
+                'custom_properties': custom_properties,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,

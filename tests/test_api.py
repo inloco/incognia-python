@@ -205,11 +205,29 @@ class TestIncogniaAPI(TestCase):
         'location': LOCATION,
         'policy_id': f'{POLICY_ID}'
     })
+    REGISTER_VALID_LOGIN_DATA_ALL_FIELDS: Final[bytes] = encode({
+        'type': 'login',
+        'request_token': f'{REQUEST_TOKEN}',
+        'account_id': f'{ACCOUNT_ID}',
+        'location': LOCATION,
+        'external_id': f'{EXTERNAL_ID}',
+        'policy_id': f'{POLICY_ID}',
+        'device_os': f'{DEVICE_OS.lower()}',
+        'app_version': f'{APP_VERSION}'
+    })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
         'request_token': f'{REQUEST_TOKEN}',
         'account_id': f'{ACCOUNT_ID}',
         'policy_id': f'{POLICY_ID}'
+    })
+    REGISTER_VALID_WEB_LOGIN_ALL_FIELDS: Final[bytes] = encode({
+        'type': 'login',
+        'request_token': f'{REQUEST_TOKEN}',
+        'account_id': f'{ACCOUNT_ID}',
+        'external_id': f'{EXTERNAL_ID}',
+        'policy_id': f'{POLICY_ID}',
+        'custom_properties': CUSTOM_PROPERTIES
     })
     REGISTER_INVALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -613,6 +631,27 @@ class TestIncogniaAPI(TestCase):
 
     @patch.object(BaseRequest, 'post')
     @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_web_login_when_all_fields_are_valid_should_work(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+        mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        request_response = api.register_web_login(self.REQUEST_TOKEN,
+                                                  self.ACCOUNT_ID,
+                                                  external_id=self.EXTERNAL_ID,
+                                                  policy_id=self.POLICY_ID,
+                                                  custom_properties=self.CUSTOM_PROPERTIES)
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  params=self.DEFAULT_PARAMS,
+                                                  data=self.REGISTER_VALID_WEB_LOGIN_ALL_FIELDS)
+
+        self.assertEqual(request_response, self.JSON_RESPONSE)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
     def test_register_web_login_when_request_token_is_empty_should_raise_an_IncogniaError(
             self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
         api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
@@ -674,6 +713,31 @@ class TestIncogniaAPI(TestCase):
                                                   headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
                                                   params=self.DEFAULT_PARAMS,
                                                   data=self.REGISTER_VALID_LOGIN_DATA_WITH_LOCATION)
+
+        self.assertEqual(request_response, self.JSON_RESPONSE)
+
+    @patch.object(BaseRequest, 'post')
+    @patch.object(TokenManager, 'get', return_value=TOKEN_VALUES)
+    def test_register_login_with_all_fields_should_work(
+            self, mock_token_manager_get: Mock, mock_base_request_post: Mock):
+
+        mock_base_request_post.configure_mock(return_value=self.JSON_RESPONSE)
+
+        api = IncogniaAPI(self.CLIENT_ID, self.CLIENT_SECRET)
+
+        request_response = api.register_login(self.REQUEST_TOKEN,
+                                              self.ACCOUNT_ID,
+                                              location=self.LOCATION,
+                                              external_id=self.EXTERNAL_ID,
+                                              policy_id=self.POLICY_ID,
+                                              device_os=self.DEVICE_OS,
+                                              app_version=self.APP_VERSION)
+
+        mock_token_manager_get.assert_called()
+        mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
+                                                  headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
+                                                  params=self.DEFAULT_PARAMS,
+                                                  data=self.REGISTER_VALID_LOGIN_DATA_ALL_FIELDS)
 
         self.assertEqual(request_response, self.JSON_RESPONSE)
 
