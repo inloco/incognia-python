@@ -13,6 +13,7 @@ from .models import (
     PaymentMethod,
     Location,
     Coupon,
+    PersonID,
 )
 from .singleton import Singleton
 from .token_manager import TokenManager
@@ -37,7 +38,8 @@ class IncogniaAPI(metaclass=Singleton):
                             policy_id: Optional[str] = None,
                             account_id: Optional[str] = None,
                             device_os: Optional[str] = None,
-                            app_version: Optional[str] = None) -> dict:
+                            app_version: Optional[str] = None,
+                            person_id: Optional[PersonID] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
 
@@ -53,7 +55,8 @@ class IncogniaAPI(metaclass=Singleton):
                 'policy_id': policy_id,
                 'account_id': account_id,
                 'device_os': device_os.lower() if device_os is not None else None,
-                'app_version': app_version
+                'app_version': app_version,
+                'person_id': person_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
@@ -66,7 +69,7 @@ class IncogniaAPI(metaclass=Singleton):
                                 policy_id: Optional[str] = None,
                                 account_id: Optional[str] = None,
                                 custom_properties: Optional[dict] = None,
-                                ) -> dict:
+                                person_id: Optional[PersonID] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
 
@@ -77,7 +80,8 @@ class IncogniaAPI(metaclass=Singleton):
                 'request_token': request_token,
                 'policy_id': policy_id,
                 'account_id': account_id,
-                'custom_properties': custom_properties
+                'custom_properties': custom_properties,
+                'person_id': person_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
@@ -95,7 +99,8 @@ class IncogniaAPI(metaclass=Singleton):
                           installation_id: Optional[str] = None,
                           request_token: Optional[str] = None,
                           occurred_at: dt.datetime = None,
-                          expires_at: dt.datetime = None) -> None:
+                          expires_at: dt.datetime = None,
+                          person_id: Optional[PersonID] = None) -> None:
         if not event:
             raise IncogniaError('event is required.')
         if occurred_at is not None and not has_timezone(occurred_at):
@@ -114,7 +119,8 @@ class IncogniaAPI(metaclass=Singleton):
                 'signup_id': signup_id,
                 'account_id': account_id,
                 'installation_id': installation_id,
-                'request_token': request_token
+                'request_token': request_token,
+                'person_id': person_id,
             }
             if occurred_at is not None:
                 body['occurred_at'] = occurred_at.isoformat()
@@ -140,7 +146,8 @@ class IncogniaAPI(metaclass=Singleton):
                          coupon: Optional[Coupon] = None,
                          device_os: Optional[str] = None,
                          app_version: Optional[str] = None,
-                         store_id: Optional[str] = None) -> dict:
+                         store_id: Optional[str] = None,
+                         person_id: Optional[PersonID] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -175,6 +182,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'device_os': device_os.lower() if device_os is not None else None,
                 'app_version': app_version,
                 'store_id': store_id,
+                'person_id': person_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -191,7 +199,8 @@ class IncogniaAPI(metaclass=Singleton):
                        evaluate: Optional[bool] = None,
                        policy_id: Optional[str] = None,
                        device_os: Optional[str] = None,
-                       app_version: Optional[str] = None) -> dict:
+                       app_version: Optional[str] = None,
+                       person_id: Optional[PersonID] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -220,6 +229,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'policy_id': policy_id,
                 'device_os': device_os.lower() if device_os is not None else None,
                 'app_version': app_version,
+                'person_id': person_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
@@ -234,7 +244,8 @@ class IncogniaAPI(metaclass=Singleton):
                            external_id: Optional[str] = None,
                            evaluate: Optional[bool] = None,
                            policy_id: Optional[str] = None,
-                           custom_properties: Optional[dict] = None) -> dict:
+                           custom_properties: Optional[dict] = None,
+                           person_id: Optional[PersonID] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -251,6 +262,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'external_id': external_id,
                 'policy_id': policy_id,
                 'custom_properties': custom_properties,
+                'person_id': person_id,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,
