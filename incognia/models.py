@@ -58,3 +58,8 @@ class Location(TypedDict, total=False):
     latitude: float
     longitude: float
     collected_at: str
+
+
+class PersonID(TypedDict, total=False):
+    type: str
+    value: str

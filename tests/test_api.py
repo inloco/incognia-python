@@ -22,6 +22,10 @@ class TestIncogniaAPI(TestCase):
     ADDRESS_LINE: Final[str] = 'ANY_ADDRESS_LINE'
     DEVICE_OS: Final[str] = 'ANY_DEVICE_OS'
     APP_VERSION: Final[str] = 'ANY_APP_VERSION'
+    PERSON_ID: Final[dict] = {
+        'type': 'cpf',
+        'value': '12345678901'
+    }
     STRUCTURED_ADDRESS: Final[dict] = {
         'locale': 'ANY_LOCALE',
         'country_name': 'ANY_COUNTRY_NAME',
@@ -71,7 +75,8 @@ class TestIncogniaAPI(TestCase):
         'policy_id': f'{POLICY_ID}',
         'account_id': f'{ACCOUNT_ID}',
         'device_os': f'{DEVICE_OS.lower()}',
-        'app_version': f'{APP_VERSION}'
+        'app_version': f'{APP_VERSION}',
+        'person_id': PERSON_ID
     })
     CUSTOM_PROPERTIES: Final[dict] = {
         'float_field': 6.092,
@@ -87,7 +92,8 @@ class TestIncogniaAPI(TestCase):
         'request_token': f'{REQUEST_TOKEN}',
         'policy_id': f'{POLICY_ID}',
         'account_id': f'{ACCOUNT_ID}',
-        'custom_properties': CUSTOM_PROPERTIES
+        'custom_properties': CUSTOM_PROPERTIES,
+        'person_id': PERSON_ID
     })
     OK_STATUS_CODE: Final[int] = 200
     CLIENT_ERROR_CODE: Final[int] = 400
@@ -155,8 +161,9 @@ class TestIncogniaAPI(TestCase):
         'account_id': f'{ACCOUNT_ID}',
         'installation_id': f'{INSTALLATION_ID}',
         'request_token': f'{REQUEST_TOKEN}',
+        'person_id': PERSON_ID,
         'occurred_at': TIMESTAMP.isoformat(),
-        'expires_at': TIMESTAMP.isoformat(),
+        'expires_at': TIMESTAMP.isoformat()
     })
     REGISTER_VALID_PAYMENT_DATA: Final[bytes] = encode({
         'type': 'payment',
@@ -178,7 +185,8 @@ class TestIncogniaAPI(TestCase):
         'coupon': COUPON,
         'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}',
-        'store_id': f'{STORE_ID}'
+        'store_id': f'{STORE_ID}',
+        'person_id': PERSON_ID
     })
     REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION: Final[bytes] = encode({
         'type': 'payment',
@@ -213,7 +221,8 @@ class TestIncogniaAPI(TestCase):
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
         'device_os': f'{DEVICE_OS.lower()}',
-        'app_version': f'{APP_VERSION}'
+        'app_version': f'{APP_VERSION}',
+        'person_id': PERSON_ID
     })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -227,7 +236,8 @@ class TestIncogniaAPI(TestCase):
         'account_id': f'{ACCOUNT_ID}',
         'external_id': f'{EXTERNAL_ID}',
         'policy_id': f'{POLICY_ID}',
-        'custom_properties': CUSTOM_PROPERTIES
+        'custom_properties': CUSTOM_PROPERTIES,
+        'person_id': PERSON_ID
     })
     REGISTER_INVALID_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -294,7 +304,8 @@ class TestIncogniaAPI(TestCase):
                                            account_id=self.ACCOUNT_ID,
                                            request_token=self.REQUEST_TOKEN,
                                            device_os=self.DEVICE_OS,
-                                           app_version=self.APP_VERSION)
+                                           app_version=self.APP_VERSION,
+                                           person_id=self.PERSON_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
@@ -313,7 +324,8 @@ class TestIncogniaAPI(TestCase):
         response = api.register_new_web_signup(request_token=self.REQUEST_TOKEN,
                                                policy_id=self.POLICY_ID,
                                                account_id=self.ACCOUNT_ID,
-                                               custom_properties=self.CUSTOM_PROPERTIES)
+                                               custom_properties=self.CUSTOM_PROPERTIES,
+                                               person_id=self.PERSON_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,
@@ -403,7 +415,8 @@ class TestIncogniaAPI(TestCase):
                               signup_id=self.SIGNUP_ID,
                               account_id=self.ACCOUNT_ID,
                               installation_id=self.INSTALLATION_ID,
-                              request_token=self.REQUEST_TOKEN)
+                              request_token=self.REQUEST_TOKEN,
+                              person_id=self.PERSON_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.FEEDBACKS,
@@ -490,7 +503,8 @@ class TestIncogniaAPI(TestCase):
             coupon=self.COUPON,
             device_os=self.DEVICE_OS,
             app_version=self.APP_VERSION,
-            store_id=self.STORE_ID
+            store_id=self.STORE_ID,
+            person_id=self.PERSON_ID
         )
 
         mock_token_manager_get.assert_called()
@@ -641,7 +655,8 @@ class TestIncogniaAPI(TestCase):
                                                   self.ACCOUNT_ID,
                                                   external_id=self.EXTERNAL_ID,
                                                   policy_id=self.POLICY_ID,
-                                                  custom_properties=self.CUSTOM_PROPERTIES)
+                                                  custom_properties=self.CUSTOM_PROPERTIES,
+                                                  person_id=self.PERSON_ID)
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
                                                   headers=self.AUTH_AND_JSON_CONTENT_HEADERS,
@@ -731,7 +746,8 @@ class TestIncogniaAPI(TestCase):
                                               external_id=self.EXTERNAL_ID,
                                               policy_id=self.POLICY_ID,
                                               device_os=self.DEVICE_OS,
-                                              app_version=self.APP_VERSION)
+                                              app_version=self.APP_VERSION,
+                                              person_id=self.PERSON_ID)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.TRANSACTIONS,
