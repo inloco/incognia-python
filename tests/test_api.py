@@ -66,6 +66,10 @@ class TestIncogniaAPI(TestCase):
     REGISTER_INVALID_SIGNUP_DATA: Final[bytes] = encode({
         'request_token': f'{INVALID_REQUEST_TOKEN}'
     })
+    CUSTOM_PROPERTIES: Final[dict] = {
+        'float_field': 6.092,
+        'string_field': "the next generation of identity",
+    }
     FULL_REGISTER_SIGNUP_DATA: Final[bytes] = encode({
         'request_token': f'{REQUEST_TOKEN}',
         'address_line': f'{ADDRESS_LINE}',
@@ -76,12 +80,9 @@ class TestIncogniaAPI(TestCase):
         'account_id': f'{ACCOUNT_ID}',
         'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}',
-        'person_id': PERSON_ID
+        'person_id': PERSON_ID,
+        'custom_properties': CUSTOM_PROPERTIES
     })
-    CUSTOM_PROPERTIES: Final[dict] = {
-        'float_field': 6.092,
-        'string_field': "the next generation of identity",
-    }
     REGISTER_WEB_SIGNUP_DATA: Final[bytes] = encode({
         'request_token': f'{REQUEST_TOKEN}'
     })
@@ -305,7 +306,8 @@ class TestIncogniaAPI(TestCase):
                                            request_token=self.REQUEST_TOKEN,
                                            device_os=self.DEVICE_OS,
                                            app_version=self.APP_VERSION,
-                                           person_id=self.PERSON_ID)
+                                           person_id=self.PERSON_ID,
+                                           custom_properties=self.CUSTOM_PROPERTIES)
 
         mock_token_manager_get.assert_called()
         mock_base_request_post.assert_called_with(Endpoints.SIGNUPS,

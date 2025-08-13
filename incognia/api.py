@@ -39,7 +39,8 @@ class IncogniaAPI(metaclass=Singleton):
                             account_id: Optional[str] = None,
                             device_os: Optional[str] = None,
                             app_version: Optional[str] = None,
-                            person_id: Optional[PersonID] = None) -> dict:
+                            person_id: Optional[PersonID] = None,
+                            custom_properties: Optional[dict] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
 
@@ -57,6 +58,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'device_os': device_os.lower() if device_os is not None else None,
                 'app_version': app_version,
                 'person_id': person_id,
+                'custom_properties': custom_properties
             }
             data = encode(body)
             return self.__request.post(Endpoints.SIGNUPS, headers=headers, data=data)
