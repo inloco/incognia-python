@@ -14,6 +14,7 @@ from .models import (
     Location,
     Coupon,
     PersonID,
+    BankAccountInfo,
 )
 from .singleton import Singleton
 from .token_manager import TokenManager
@@ -149,7 +150,9 @@ class IncogniaAPI(metaclass=Singleton):
                          device_os: Optional[str] = None,
                          app_version: Optional[str] = None,
                          store_id: Optional[str] = None,
-                         person_id: Optional[PersonID] = None) -> dict:
+                         person_id: Optional[PersonID] = None,
+                         debtor_account: Optional[BankAccountInfo] = None,
+                         creditor_account: Optional[BankAccountInfo] = None) -> dict:
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -185,6 +188,8 @@ class IncogniaAPI(metaclass=Singleton):
                 'app_version': app_version,
                 'store_id': store_id,
                 'person_id': person_id,
+                'debtor_account': debtor_account,
+                'creditor_account': creditor_account,
             }
             data = encode(body)
             return self.__request.post(Endpoints.TRANSACTIONS, headers=headers, params=params,

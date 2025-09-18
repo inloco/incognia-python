@@ -1,4 +1,4 @@
-from typing import TypedDict, Literal
+from typing import TypedDict, Literal, List
 
 
 class Coordinates(TypedDict):
@@ -63,3 +63,21 @@ class Location(TypedDict, total=False):
 class PersonID(TypedDict, total=False):
     type: str
     value: str
+
+
+class PixKey(TypedDict):
+    type: str
+    value: str
+
+
+class BankAccountInfo(TypedDict, total=False):
+    account_type: str
+    account_purpose: str
+    holder_type: str
+    holder_tax_id: PersonID
+    country: str
+    ispb_code: str
+    branch_code: str
+    account_number: str
+    account_check_digit: str
+    pix_keys: List[PixKey]
