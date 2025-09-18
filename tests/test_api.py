@@ -150,6 +150,24 @@ class TestIncogniaAPI(TestCase):
         'longitude': 13.123,
         'collected_at': "12:04 14/10/2024"
     }
+    BANK_ACCOUNT_INFO: Final[dict] = {
+        "account_type": "checking",
+        "account_purpose": "personal",
+        "holder_type": "individual",
+        "holder_tax_id": {
+            "type": "cpf",
+            "value": "12345678900",
+        },
+        "country": "BR",
+        "ispb_code": "12345678",
+        "branch_code": "0001",
+        "account_number": "987654",
+        "account_check_digit": "0",
+        "pix_keys": [
+            {"type": "email", "value": "user@example.com"},
+            {"type": "phone", "value": "+5511999999999"},
+        ],
+    }
     REGISTER_VALID_FEEDBACK_DATA: Final[bytes] = encode({
         'event': f'{VALID_EVENT_FEEDBACK_TYPE}'
     })
@@ -187,7 +205,9 @@ class TestIncogniaAPI(TestCase):
         'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}',
         'store_id': f'{STORE_ID}',
-        'person_id': PERSON_ID
+        'person_id': PERSON_ID,
+        'debtor_account': BANK_ACCOUNT_INFO,
+        'creditor_account': BANK_ACCOUNT_INFO
     })
     REGISTER_VALID_PAYMENT_DATA_WITH_LOCATION: Final[bytes] = encode({
         'type': 'payment',
@@ -506,7 +526,9 @@ class TestIncogniaAPI(TestCase):
             device_os=self.DEVICE_OS,
             app_version=self.APP_VERSION,
             store_id=self.STORE_ID,
-            person_id=self.PERSON_ID
+            person_id=self.PERSON_ID,
+            debtor_account=self.BANK_ACCOUNT_INFO,
+            creditor_account=self.BANK_ACCOUNT_INFO
         )
 
         mock_token_manager_get.assert_called()
