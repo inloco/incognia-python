@@ -243,7 +243,8 @@ class TestIncogniaAPI(TestCase):
         'policy_id': f'{POLICY_ID}',
         'device_os': f'{DEVICE_OS.lower()}',
         'app_version': f'{APP_VERSION}',
-        'person_id': PERSON_ID
+        'custom_properties': CUSTOM_PROPERTIES,
+        'person_id': PERSON_ID,
     })
     REGISTER_VALID_WEB_LOGIN_DATA: Final[bytes] = encode({
         'type': 'login',
@@ -771,6 +772,7 @@ class TestIncogniaAPI(TestCase):
                                               policy_id=self.POLICY_ID,
                                               device_os=self.DEVICE_OS,
                                               app_version=self.APP_VERSION,
+                                              custom_properties=self.CUSTOM_PROPERTIES,
                                               person_id=self.PERSON_ID)
 
         mock_token_manager_get.assert_called()
