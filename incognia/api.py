@@ -207,7 +207,9 @@ class IncogniaAPI(metaclass=Singleton):
                        policy_id: Optional[str] = None,
                        device_os: Optional[str] = None,
                        app_version: Optional[str] = None,
+                       custom_properties: Optional[dict] = None,
                        person_id: Optional[PersonID] = None) -> dict:
+
         if not request_token:
             raise IncogniaError('request_token is required.')
         if not account_id:
@@ -236,6 +238,7 @@ class IncogniaAPI(metaclass=Singleton):
                 'policy_id': policy_id,
                 'device_os': device_os.lower() if device_os is not None else None,
                 'app_version': app_version,
+                'custom_properties': custom_properties,
                 'person_id': person_id,
             }
             data = encode(body)
